@@ -2,22 +2,22 @@ package org.forerunnerintl.xlate.io;
 
 import java.io.File;
 
-public abstract class SearchablePipeSeparatedValuesFile {
+public class SearchableCommaSeparatedValuesFile {
     public static final String      ID = "ID";
 
     private int         idIndex = -1;
     private String[]    fields;
-    private File        psvFile;
+    private File        csvFile;
 
     /**
      Create a PipeSeperatedValuesFile
-     @param psvFile the file
+     @param csvFile the file
      @param fields A list of field names. At least one of the fields must be @ID and the length must be at least two
 
      */
-    protected SearchablePipeSeparatedValuesFile(File psvFile, String[] fields) {
-        if (psvFile == null) {
-            throw new NullPointerException("psvFile must be a valid file.");
+    public SearchableCommaSeparatedValuesFile(File csvFile, String[] fields) {
+        if (csvFile == null) {
+            throw new NullPointerException("csvFile must be a valid file.");
         }
 
         if (fields == null || fields.length < 2) {
@@ -35,8 +35,8 @@ public abstract class SearchablePipeSeparatedValuesFile {
             throw new IllegalArgumentException("One field name must e ID");
         }
 
-        this.psvFile = psvFile;
-        this.psvFile = psvFile;
+        this.csvFile = csvFile;
+        this.fields = fields;
     }
 
 }
