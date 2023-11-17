@@ -50,7 +50,10 @@ public class XlateSettings {
 
         BufferedWriter writer = null;
         try {
-            writer = new BufferedWriter(new FileWriter(getXlateSettingsPath().toFile()));
+            File file = getXlateSettingsPath().toFile();
+            File dir = file.getParentFile();
+            dir.mkdirs();
+            writer = new BufferedWriter(new FileWriter(file));
             properties.store(writer, "Xlate Properties");
         } catch (IOException ioe) {
             throw new RuntimeException("Error creating settings", ioe);
@@ -65,5 +68,23 @@ public class XlateSettings {
         String pathName = settings.getProperty(KEY_LAST_PROJECT);
         Path result = Paths.get(pathName);
         return result;
+    }
+
+    /**
+     * Set the last project accessed
+     * @param projectDirectory the project directory
+     */
+    public void setLastProject(Path projectDirectory) {
+        String pathName = projectDirectory.toFile().getAbsolutePath();
+        settings.setProperty(KEY_LAST_PROJECT, pathName);
+    }
+
+    public void saveSettings() {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(getXlateSettingsPath().toFile()));
+            settings.store(writer, "Automatic update");
+        } catch (IOException ioe) {
+            throw new RuntimeException("Error storing settings", ioe);
+        }
     }
 }

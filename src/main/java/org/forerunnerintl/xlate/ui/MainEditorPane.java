@@ -1,12 +1,18 @@
 package org.forerunnerintl.xlate.ui;
 
-import javax.swing.*;
+import org.forerunnerintl.xlate.io.ProjectSettings;
+
 import java.awt.*;
+import java.io.File;
+import javax.swing.*;
 
 public class MainEditorPane extends JPanel {
-    private static final int    BUTTON_HEIGHT = 25;
-    private static final int    BUTTON_WIDTH = 50;
-    private static final Dimension  BUTTON_SIZE = new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT);
+    public static final String  NAME_DEFINITION = "Definition";
+    public static final String  NAME_TRANSLATION_NOTE = "Translation Note";
+
+    private static final int    ANSWER_YES = 0;
+
+    private JFrame          owner;
 
     private JEditorPane     editMainEditor;
     private JScrollPane     scrollMainEditor;
@@ -22,8 +28,12 @@ public class MainEditorPane extends JPanel {
     private JScrollPane     scrollTranslation;
     private JTextArea       textTranslation;
 
-    public MainEditorPane() {
+    private EditorController    editorController;
+
+    public MainEditorPane(JFrame owner) {
         super(new BorderLayout());
+        this.owner = owner;
+        editorController = new EditorControllerWrapper(this);
 
         buildEditorPane();
         buildTabPane();
@@ -46,6 +56,7 @@ public class MainEditorPane extends JPanel {
 
     private void addDefinitionTab() {
         panelDefinition = new JPanel(new BorderLayout());
+        panelDefinition.setName(NAME_DEFINITION);
 
         scrollDefinition = new JScrollPane();
         panelDefinition.add(scrollDefinition, BorderLayout.NORTH);
@@ -54,7 +65,7 @@ public class MainEditorPane extends JPanel {
         scrollDefinition.add(textDefinition);
 
         buttonEditDefinition = new JButton("Edit...");
-        buttonEditDefinition.setPreferredSize(BUTTON_SIZE);
+        buttonEditDefinition.setPreferredSize(Constants.BUTTON_SIZE);
         panelDefinition.add(buttonEditDefinition, BorderLayout.SOUTH);
 
         tabbedPane.add(panelDefinition);
@@ -62,6 +73,7 @@ public class MainEditorPane extends JPanel {
 
     private void addTranslationNoteTab() {
         panelTranslation = new JPanel(new BorderLayout());
+        panelTranslation.setName(NAME_TRANSLATION_NOTE);
 
         scrollTranslation = new JScrollPane();
         panelTranslation.add(scrollTranslation, BorderLayout.NORTH);
@@ -70,7 +82,7 @@ public class MainEditorPane extends JPanel {
         scrollTranslation.add(textTranslation);
 
         buttonEditTranslation = new JButton("Edit...");
-        buttonEditTranslation.setPreferredSize(BUTTON_SIZE);
+        buttonEditTranslation.setPreferredSize(Constants.BUTTON_SIZE);
         panelTranslation.add(buttonEditTranslation, BorderLayout.SOUTH);
 
         tabbedPane.add(panelTranslation);
@@ -85,5 +97,51 @@ public class MainEditorPane extends JPanel {
 
         Dimension rightDim = new Dimension(rightWidth, newHeight);
         tabbedPane.setPreferredSize(rightDim);
+    }
+
+    public void openProject() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setDialogTitle("Select bible project directory");
+        int returnVal = chooser.showOpenDialog(this);
+        if(returnVal == JFileChooser.APPROVE_OPTION) {
+            File dir = chooser.getSelectedFile();
+            editorController.openProjectDirectory(dir);
+        }
+    }
+
+    /**
+     * A project wasn't found for the specified directory. Handle it.
+     * @param projectDir the project directory
+     */
+    public void handleNoProject(File projectDir) {
+        Object[] buttonText = {"Yes", "No"};
+        if (showYesNoDialog(buttonText,
+                "No project found in: " + projectDir.getAbsolutePath() + ". Create new project?",
+                "No Project Found")) {
+            editorController.createProject(projectDir);
+        }
+    }
+
+    private boolean showYesNoDialog(Object[] buttonText, String msg, String title) {
+        int choice = JOptionPane.showOptionDialog(this,
+                msg,
+                title,
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                buttonText,
+                buttonText[0]);
+
+        return choice == ANSWER_YES;
+    }
+
+    public void newProject(ProjectSettings projectSettings) {
+        NewProjectDialog dialog = new NewProjectDialog(owner);
+        if (dialog.isCreating()) {
+            projectSettings.setOldTestamentSourceFormat(dialog.getOldTestament());
+            projectSettings.setNewTestamentSourceFormat(dialog.getNewTestament());
+            projectSettings.store();
+        }
     }
 }

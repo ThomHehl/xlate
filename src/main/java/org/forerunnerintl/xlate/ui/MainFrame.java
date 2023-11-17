@@ -17,7 +17,7 @@ public class MainFrame extends JFrame implements ComponentListener {
 
         setTitle("Xlate -- Bible Translation Assistant");
 
-        mainEditorPanel = new MainEditorPane();
+        mainEditorPanel = new MainEditorPane(this);
         add(mainEditorPanel, BorderLayout.CENTER);
 
         addComponentListener(this);
