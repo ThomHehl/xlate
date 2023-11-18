@@ -7,9 +7,12 @@ import java.util.List;
 
 public class OsisVerse {
     @JacksonXmlElementWrapper(useWrapping = false)
+    @JacksonXmlProperty(localName = "note")
     private List<OsisNote> note;
     @JacksonXmlProperty(localName = "osisID")
     private String osisId;
+    @JacksonXmlProperty(localName = "seg")
+    private String segment;
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "w")
     private List<OsisWord> words;
@@ -28,6 +31,14 @@ public class OsisVerse {
 
     public void setOsisId(String osisId) {
         this.osisId = osisId;
+    }
+
+    public String getSegment() {
+        return segment;
+    }
+
+    public void setSegment(String segment) {
+        this.segment = segment;
     }
 
     public List<OsisWord> getWords() {

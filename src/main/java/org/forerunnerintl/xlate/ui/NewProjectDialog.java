@@ -13,14 +13,17 @@ public class NewProjectDialog extends JDialog {
     private static final String     FORMAT_OSIS = "OSIS";
     private static final String     FORMAT_SBL = "SBL";
     private static final String[]   FORMAT_NAMES = {FORMAT_OSIS, FORMAT_SBL};
+    private static final String     LABEL_TITLE = "Title";
     private static final String     TITLE = "New Project";
 
     private boolean creating;
     private TextFormat newTestament;
     private TextFormat oldTestament;
+    private String title;
 
     private JComboBox<String> cmbNt;
     private JComboBox<String> cmbOt;
+    private JTextField txtTitle;
 
     public NewProjectDialog(JFrame owner) {
         super(owner, TITLE, true);
@@ -62,7 +65,11 @@ public class NewProjectDialog extends JDialog {
 
     private void addSourceTextDropDowns() {
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(2,2));
+        panel.setLayout(new GridLayout(3,2));
+
+        panel.add(new Label(LABEL_TITLE));
+        txtTitle = new JTextField();
+        panel.add(txtTitle);
 
         panel.add(new Label(FORMAT_OT));
         cmbOt = new JComboBox<String>(FORMAT_NAMES);
@@ -86,6 +93,7 @@ public class NewProjectDialog extends JDialog {
         creating = true;
         newTestament = getSelectedTextFormat(cmbNt);
         oldTestament = getSelectedTextFormat(cmbOt);
+        title = txtTitle.getText();
         setVisible(false);
     }
 
@@ -108,6 +116,16 @@ public class NewProjectDialog extends JDialog {
 
     public TextFormat getOldTestament() {
         return oldTestament;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public boolean isCreating() {

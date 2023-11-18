@@ -13,6 +13,7 @@ public class ProjectSettings {
     private static final String         FILE_NAME = "xlate.settings";
     private static final String         KEY_NT_FORMAT = "NT_FORMAT";
     private static final String         KEY_OT_FORMAT = "OT_FORMAT";
+    private static final String         KEY_TITLE = "TITLE";
 
     private Properties properties;
     private Path settingsDirectory;
@@ -51,12 +52,22 @@ public class ProjectSettings {
         getProperties().put(key, strVal);
     }
 
+    public String getTitle() {
+        String result = getProperties().getProperty(KEY_TITLE);
+        return result;
+    }
+
+    public void setTitle(String title) {
+        getProperties().put(KEY_TITLE, title);
+    }
+
     /**
      * Find the project settings in the specified directory
      * @param dir the directory for the project
      * @return true if the file exists. False if not
      */
     public boolean setProjectDirectory(Path dir) {
+        settingsDirectory = dir;
         properties = openProjectSettings(dir);
         return properties != null;
     }
@@ -66,7 +77,7 @@ public class ProjectSettings {
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(settingsPath.toFile()));
-            getProperties().store(writer, "Updates");
+            getProperties().store(writer, "Xlate Bible Translation Project Settings");
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }

@@ -139,6 +139,7 @@ public class MainEditorPane extends JPanel {
     public void newProject(ProjectSettings projectSettings) {
         NewProjectDialog dialog = new NewProjectDialog(owner);
         if (dialog.isCreating()) {
+            projectSettings.setTitle(dialog.getTitle());
             projectSettings.setOldTestamentSourceFormat(dialog.getOldTestament());
             projectSettings.setNewTestamentSourceFormat(dialog.getNewTestament());
             projectSettings.store();

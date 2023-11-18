@@ -1,5 +1,6 @@
 package org.forerunnerintl.xlate.text
 
+import org.forerunnerintl.xlate.text.osis.OsisBook
 import org.forerunnerintl.xlate.text.osis.OsisDocument
 import org.forerunnerintl.xlate.text.osis.OsisReader
 import spock.lang.Specification
@@ -22,8 +23,9 @@ class OsisReaderTest extends Specification {
     def "Read OSIS"() {
         when: "Reading the file"
         OsisDocument osisDocument = osisReader.readFile(obadiah.toFile())
+        OsisBook book = osisDocument.getOsisText().getOsisBook()
 
         then: "Should match"
-        true
+        book.chapters.size() == 1
     }
 }

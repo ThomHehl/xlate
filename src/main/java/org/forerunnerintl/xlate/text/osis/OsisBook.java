@@ -7,17 +7,18 @@ import java.util.List;
 
 public class OsisBook {
     @JacksonXmlElementWrapper(useWrapping = false)
-    private List<OsisChapter> chapter;
+    @JacksonXmlProperty(localName = "chapter")
+    private List<OsisChapter> chapters;
     @JacksonXmlProperty(localName = "osisID")
     private String osisId;
     private String type;
 
-    public List<OsisChapter> getChapter() {
-        return chapter;
+    public List<OsisChapter> getChapters() {
+        return chapters;
     }
 
-    public void setChapter(List<OsisChapter> chapter) {
-        this.chapter = chapter;
+    public void setChapters(List<OsisChapter> chapters) {
+        this.chapters = chapters;
     }
 
     public String getOsisId() {
