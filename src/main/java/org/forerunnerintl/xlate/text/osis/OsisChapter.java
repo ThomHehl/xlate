@@ -3,7 +3,9 @@ package org.forerunnerintl.xlate.text.osis;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import org.forerunnerintl.xlate.text.DocumentChapter;
+import org.forerunnerintl.xlate.text.DocumentVerse;
 
+import java.util.Collections;
 import java.util.List;
 
 public class OsisChapter extends DocumentChapter {
@@ -20,11 +22,33 @@ public class OsisChapter extends DocumentChapter {
         this.osisId = osisId;
     }
 
-    public List<OsisVerse> getVerse() {
+    public List<OsisVerse> getOsisVerses() {
         return verse;
     }
 
-    public void setVerse(List<OsisVerse> verse) {
-        this.verse = verse;
+    public void setOsisVerses(List<OsisVerse> osisVerses) {
+        this.verse = osisVerses;
+    }
+
+    @Override
+    public String getUniqueId() {
+        return getOsisId();
+    }
+
+    @Override
+    public void setUniqueId(String uniqueId) {
+        setOsisId(uniqueId);
+    }
+
+    @Override
+    public List<DocumentVerse> getVerses() {
+        List<DocumentVerse> result = Collections.unmodifiableList((List) getOsisVerses());
+        return result;
+    }
+
+    @Override
+    public void setVerses(List<DocumentVerse> verses) {
+        List<OsisVerse> verseList = Collections.unmodifiableList((List) verses);
+        setOsisVerses(verseList);
     }
 }

@@ -5,11 +5,14 @@ import org.forerunnerintl.xlate.text.TextFormat;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 public class ProjectSettings {
+    private static final String         DIR_DATA = "data";
+    private static final String         DIR_NEW_TESTAMENT = "NT";
+    private static final String         DIR_OLD_TESTAMENT = "OT";
+    private static final String         DIR_SOURCE_TEXT = "source-text";
+    private static final String         DIR_TEXT = "text";
     private static final String         FILE_NAME = "xlate.settings";
     private static final String         KEY_NT_FORMAT = "NT_FORMAT";
     private static final String         KEY_OT_FORMAT = "OT_FORMAT";
@@ -17,7 +20,6 @@ public class ProjectSettings {
 
     private Properties properties;
     private Path settingsDirectory;
-    private Path settingsFile;
 
     protected synchronized Properties getProperties() {
         return properties == null ? properties = new Properties() : properties;
@@ -59,6 +61,39 @@ public class ProjectSettings {
 
     public void setTitle(String title) {
         getProperties().put(KEY_TITLE, title);
+    }
+
+    public Path getNewTestamentSourceDirectory() {
+        Path result = Paths.get(getSourceTextDirectory().toString(), DIR_NEW_TESTAMENT);
+        return result;
+    }
+
+    public Path getOldTestamentSourceDirectory() {
+        Path result = Paths.get(getSourceTextDirectory().toString(), DIR_OLD_TESTAMENT);
+        return result;
+    }
+
+    public Path getDataDirectory() {
+        Path result = Paths.get(getProjectDirectory().toString(), DIR_DATA);
+        return result;
+    }
+
+    public Path getTextDirectory() {
+        Path result = Paths.get(getProjectDirectory().toString(), DIR_TEXT);
+        return result;
+    }
+
+    public Path getSourceTextDirectory() {
+        Path result = Paths.get(getProjectDirectory().toString(), DIR_SOURCE_TEXT);
+        return result;
+    }
+
+    /**
+     * Find the project settings in the specified directory
+     * @return the path to the project home directory
+     */
+    public Path getProjectDirectory() {
+        return settingsDirectory;
     }
 
     /**

@@ -1,4 +1,7 @@
-package org.forerunnerintl.xlate.ui;
+package org.forerunnerintl.xlate.controller;
+
+import org.forerunnerintl.xlate.io.ProjectSettings;
+import org.forerunnerintl.xlate.ui.MainEditorPane;
 
 import java.io.File;
 
@@ -30,6 +33,18 @@ public class EditorControllerWrapper implements EditorController {
         };
         startThread.start();
 
+    }
+
+    @Override
+    public void convertSource(ProjectSettings projectSettings) {
+        Thread startThread = new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                editorController.convertSource(projectSettings);
+            }
+        };
+        startThread.start();
     }
 
     @Override

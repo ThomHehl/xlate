@@ -1,7 +1,8 @@
-package org.forerunnerintl.xlate.ui;
+package org.forerunnerintl.xlate.controller;
 
 import org.forerunnerintl.xlate.io.ProjectSettings;
 import org.forerunnerintl.xlate.io.XlateSettings;
+import org.forerunnerintl.xlate.ui.MainEditorPane;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -33,6 +34,30 @@ public class EditorControllerImpl implements EditorController {
         } else {
             mainEditorPane.handleNoProject(dir);
         }
+    }
+
+    @Override
+    public void convertSource(ProjectSettings projectSettings) {
+        if (convertOldTestamentSource(projectSettings)) {
+            convertNewTestamentSource(projectSettings);
+        }
+    }
+
+    private boolean convertNewTestamentSource(ProjectSettings projectSettings) {
+        boolean result = true;
+        return result;
+    }
+
+    private boolean convertOldTestamentSource(ProjectSettings projectSettings) {
+        boolean result = true;
+
+        Path otSource = projectSettings.getOldTestamentSourceDirectory();
+        if (!otSource.toFile().exists()) {
+            mainEditorPane.directoryNotFound("Cannot find OT source directory", otSource.toFile().getAbsolutePath());
+            result = false;
+        }
+
+        return result;
     }
 
     @Override

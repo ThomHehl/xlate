@@ -1,8 +1,6 @@
-package org.forerunnerintl.xlate.text
+package org.forerunnerintl.xlate.text.osis
 
-import org.forerunnerintl.xlate.text.osis.OsisBook
-import org.forerunnerintl.xlate.text.osis.OsisDocument
-import org.forerunnerintl.xlate.text.osis.OsisReader
+
 import spock.lang.Specification
 
 import java.nio.file.Path
@@ -10,20 +8,24 @@ import java.nio.file.Paths
 
 class OsisReaderTest extends Specification {
     private Path obadiah
-    private OsisReader osisReader;
+    private OsisReader osisReader
 
-    void setup() {
+    Path getObadiah() {
         URL url = getClass().getClassLoader().getResource("source-text/ot/Obad.xml")
         URI uri = url.toURI()
-        obadiah = Paths.get(uri)
+        Path obadiah = Paths.get(uri)
+        return obadiah
+    }
 
+    void setup() {
+        obadiah = getObadiah()
         osisReader = new OsisReader()
     }
 
     def "Read OSIS"() {
         when: "Reading the file"
-        OsisDocument osisDocument = osisReader.readFile(obadiah.toFile())
-        OsisBook book = osisDocument.getOsisText().getOsisBook()
+        OsisDocument osisDocument = osisReader.readPath(obadiah)
+        OsisBook book = osisDocument.getSourceText().getOsisBook()
 
         then: "Should match"
         book.chapters.size() == 1

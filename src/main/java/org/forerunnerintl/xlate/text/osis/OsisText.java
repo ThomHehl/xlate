@@ -1,18 +1,23 @@
 package org.forerunnerintl.xlate.text.osis;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import org.forerunnerintl.xlate.text.DocumentBook;
+import org.forerunnerintl.xlate.text.SourceText;
 
-public class OsisText {
-    public static final String LANGUAGE_ENGLISH = "en";
-    public static final String LANGUAGE_GREEK = "gr";
-    public static final String LANGUAGE_HEBREW = "he";
+public class OsisText extends SourceText {
 
     private OsisHeader header;
-    private String lang;
+    @JacksonXmlProperty(localName = "lang")
+    private String language;
     @JacksonXmlProperty(localName = "div")
     private OsisBook osisBook;
     private String osisIDWork;
     private String osisRefWork;
+
+    @Override
+    public void clear() {
+        setHeader(null);
+    }
 
     public OsisHeader getHeader() {
         return header;
@@ -20,13 +25,6 @@ public class OsisText {
 
     public void setHeader(OsisHeader header) {
         this.header = header;
-    }
-    public String getLang() {
-        return lang;
-    }
-
-    public void setLang(String lang) {
-        this.lang = lang;
     }
 
     public String getOsisRefWork() {
@@ -51,5 +49,25 @@ public class OsisText {
 
     public void setOsisIDWork(String osisIDWork) {
         this.osisIDWork = osisIDWork;
+    }
+
+    @Override
+    public String getLanguage() {
+        return language;
+    }
+
+    @Override
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    @Override
+    public DocumentBook getDocumentBook() {
+        return getOsisBook();
+    }
+
+    @Override
+    public void setDocumentBook(DocumentBook documentBook) {
+        setOsisBook((OsisBook) documentBook);
     }
 }

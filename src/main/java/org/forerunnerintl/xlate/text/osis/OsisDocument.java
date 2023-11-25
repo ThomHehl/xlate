@@ -3,7 +3,6 @@ package org.forerunnerintl.xlate.text.osis;
 import org.forerunnerintl.xlate.text.DocumentText;
 
 public class OsisDocument extends DocumentText {
-    private OsisText osisText;
     private String schemaLocation;
 
     public String getSchemaLocation() {
@@ -15,10 +14,10 @@ public class OsisDocument extends DocumentText {
     }
 
     public OsisText getOsisText() {
-        return osisText;
+        return (OsisText) getSourceText();
     }
 
-    public void setOsisText(OsisText osisText) {
-        this.osisText = osisText;
+    public void setOsisText(OsisText sourceText) {
+        setSourceText(sourceText);
     }
 }

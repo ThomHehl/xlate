@@ -5,11 +5,18 @@ import org.forerunnerintl.xlate.text.SourceTextReader;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
-public class OsisReader extends SourceTextReader {
-    private XmlMapper xmlMapper = new XmlMapper();
+public class OsisReader implements SourceTextReader {
+    private final XmlMapper xmlMapper = new XmlMapper();
 
-    public OsisDocument readFile(File docFile) {
+    @Override
+    public OsisDocument readPath(Path path) {
+        return readPath(path.toFile());
+    }
+
+    @Override
+    public OsisDocument readPath(File docFile) {
         OsisDocument osisDocument;
         try {
             osisDocument = xmlMapper.readValue(docFile, OsisDocument.class);

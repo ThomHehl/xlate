@@ -1,5 +1,7 @@
 package org.forerunnerintl.xlate.ui;
 
+import org.forerunnerintl.xlate.controller.EditorController;
+import org.forerunnerintl.xlate.controller.EditorControllerWrapper;
 import org.forerunnerintl.xlate.io.ProjectSettings;
 
 import java.awt.*;
@@ -12,7 +14,7 @@ public class MainEditorPane extends JPanel {
 
     private static final int    ANSWER_YES = 0;
 
-    private JFrame          owner;
+    final private JFrame    owner;
 
     private JEditorPane     editMainEditor;
     private JScrollPane     scrollMainEditor;
@@ -28,7 +30,7 @@ public class MainEditorPane extends JPanel {
     private JScrollPane     scrollTranslation;
     private JTextArea       textTranslation;
 
-    private EditorController    editorController;
+    private EditorController editorController;
 
     public MainEditorPane(JFrame owner) {
         super(new BorderLayout());
@@ -143,6 +145,25 @@ public class MainEditorPane extends JPanel {
             projectSettings.setOldTestamentSourceFormat(dialog.getOldTestament());
             projectSettings.setNewTestamentSourceFormat(dialog.getNewTestament());
             projectSettings.store();
+
+            editorController.convertSource(projectSettings);
         }
+    }
+
+    /**
+     * Report a directory not found
+     * @param msg the message to display
+     * @param path the name of the missing directory
+     */
+    public void directoryNotFound(String msg, String path) {
+        String fullMessage = msg + ": " + path;
+        showError(msg, fullMessage);
+    }
+
+    private void showError(String title, String msg) {
+        JOptionPane.showMessageDialog(this,
+                msg,
+                title,
+                JOptionPane.ERROR_MESSAGE);
     }
 }

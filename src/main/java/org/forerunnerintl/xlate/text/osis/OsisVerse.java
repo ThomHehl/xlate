@@ -2,35 +2,72 @@ package org.forerunnerintl.xlate.text.osis;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import org.forerunnerintl.xlate.text.DocumentNote;
+import org.forerunnerintl.xlate.text.DocumentVerse;
+import org.forerunnerintl.xlate.text.DocumentWord;
 
+import java.util.Collections;
 import java.util.List;
 
-public class OsisVerse {
+public class OsisVerse extends DocumentVerse {
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "note")
-    private List<OsisNote> note;
+    private List<OsisNote> osisNotes;
     @JacksonXmlProperty(localName = "osisID")
-    private String osisId;
+    private String uniqueId;
     @JacksonXmlProperty(localName = "seg")
     private String segment;
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "w")
-    private List<OsisWord> words;
+    private List<OsisWord> osisWords;
 
-    public List<OsisNote> getNote() {
-        return note;
+    @Override
+    public void clear() {
+        if (osisNotes != null) {
+            osisNotes.clear();
+        }
     }
 
-    public void setNote(List<OsisNote> note) {
-        this.note = note;
+    public List<OsisNote> getOsisNotes() {
+        return osisNotes;
     }
 
-    public String getOsisId() {
-        return osisId;
+    @Override
+    public List<DocumentNote> getNotes() {
+        List<DocumentNote> result = Collections.unmodifiableList((List) getOsisNotes());
+        return result;
     }
 
-    public void setOsisId(String osisId) {
-        this.osisId = osisId;
+    @Override
+    public void setNotes(List<DocumentNote> notes) {
+        List<OsisNote> noteList = Collections.unmodifiableList((List) notes);
+        setOsisNotes(noteList);
+    }
+
+    public void setOsisNotes(List<OsisNote> osisNotes) {
+        this.osisNotes = osisNotes;
+    }
+
+    @Override
+    public String getUniqueId() {
+        return uniqueId;
+    }
+
+    @Override
+    public void setUniqueId(String uniqueId) {
+        this.uniqueId = uniqueId;
+    }
+
+    @Override
+    public List<DocumentWord> getWords() {
+        List<DocumentWord> result = (List) osisWords;
+        return result;
+    }
+
+    @Override
+    public void setWords(List<DocumentWord> words) {
+        List<OsisWord> wordList = (List) words;
+        setOsisWords(wordList);
     }
 
     public String getSegment() {
@@ -41,11 +78,11 @@ public class OsisVerse {
         this.segment = segment;
     }
 
-    public List<OsisWord> getWords() {
-        return words;
+    public List<OsisWord> getOsisWords() {
+        return osisWords;
     }
 
-    public void setWords(List<OsisWord> words) {
-        this.words = words;
+    public void setOsisWords(List<OsisWord> words) {
+        this.osisWords = words;
     }
 }
