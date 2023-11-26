@@ -6,6 +6,7 @@ import org.forerunnerintl.xlate.text.DocumentNote;
 import org.forerunnerintl.xlate.text.DocumentVerse;
 import org.forerunnerintl.xlate.text.DocumentWord;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,7 +24,9 @@ public class OsisVerse extends DocumentVerse {
 
     @Override
     public void clear() {
-        if (osisNotes != null) {
+        if (osisNotes == null) {
+            osisNotes = new ArrayList<>();
+        } else {
             osisNotes.clear();
         }
     }

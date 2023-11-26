@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osis xmlns="http://www.bibletechnologies.net/2003/OSIS/namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.bibletechnologies.net/2003/OSIS/namespace http://www.bibletechnologies.net/osisCore.2.1.1.xsd">
+  <osisText xml:lang="he" osisIDWork="OSHB" osisRefWork="Bible">
+    <header>
+    </header>
+    <div type="book" osisID="Obad">
+      <chapter osisID="Obad.1">
+        <verse osisID="Obad.1.1">
+          <w lemma="2377" n="1.0" morph="HNcmsc" id="31xeN">חֲז֖וֹן</w>
+          <w lemma="5662" n="1" morph="HNp" id="31Nvk">עֹֽבַדְיָ֑ה</w>
+          <w lemma="3541" morph="HD" id="31TyA">כֹּֽה</w><seg type="x-maqqef">־</seg><w lemma="559" morph="HVqp3ms" id="31vuQ">אָמַר֩</w>
+          <w lemma="136" morph="HNcmpc/Sp1cs" id="31TSc">אֲדֹנָ֨/י</w>
+          <w lemma="3069" n="0.0.2.0" morph="HNp" id="31k5P">יְהוִ֜ה</w>
+          <w lemma="l/123" n="0.0.2" morph="HR/Np" id="31nPh">לֶ/אֱד֗וֹם</w>
+          <w lemma="8052" morph="HNcfsa" id="31LN3">שְׁמוּעָ֨ה</w>
+          <w lemma="8085" n="0.0.1.0" morph="HVqp1cp" id="31Qzf">שָׁמַ֜עְנוּ</w>
+          <w lemma="m/854" morph="HR/R" id="31aPd">מֵ/אֵ֤ת</w>
+          <w lemma="3068" n="0.0.1" morph="HNp" id="31eYX">יְהוָה֙</w>
+          <w lemma="c/6735 a" n="0.0.0" morph="HC/Ncmsa" id="31C5U">וְ/צִיר֙</w>
+          <w lemma="b/1471 a" morph="HRd/Ncmpa" id="31qNN">בַּ/גּוֹיִ֣ם</w>
+          <w lemma="7971" n="0.0" morph="HVPp3ms" id="31EVS">שֻׁלָּ֔ח</w>
+          <w lemma="6965 b" morph="HVqv2mp" id="31PB6">ק֛וּמוּ</w>
+          <w lemma="c/6965 b" morph="HC/Vqh1cp" id="3137c">וְ/נָק֥וּמָה</w>
+          <w lemma="5921 a" morph="HR/Sp3fs" id="31x9c">עָלֶי/הָ</w>
+          <note n="Q">Marks a place where we agree with BHQ against BHS in reading L. </note>
+          <note n="c">We read one or more accents in L differently than BHS. Often this notation indicates a typographical error in BHS. </note>
+          <note n="n">Marks an anomalous form. </note>
+          <w lemma="l/4421" n="0" morph="HRd/Ncfsa" id="31yNB">לַ/מִּלְחָמָֽה</w><seg type="x-sof-pasuq">׃</seg>
+        </verse>
+      </chapter>
+    </div>
+  </osisText>
+</osis>

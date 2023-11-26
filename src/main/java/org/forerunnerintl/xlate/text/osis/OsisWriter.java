@@ -14,7 +14,7 @@ public class OsisWriter implements SourceTextWriter {
     @Override
     public void writeFile(File file, DocumentText text) {
         try {
-            xmlMapper.writeValue(file, text);
+            xmlMapper.writerWithDefaultPrettyPrinter().writeValue(file, text);
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }

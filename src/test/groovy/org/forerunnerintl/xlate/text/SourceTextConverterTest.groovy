@@ -1,5 +1,9 @@
 package org.forerunnerintl.xlate.text
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText
 import spock.lang.Specification
 
 import java.nio.file.Path
@@ -10,7 +14,7 @@ class SourceTextConverterTest extends Specification {
     private SourceTextConverter sourceTextConverter
 
     Path getObadiah() {
-        URL url = getClass().getClassLoader().getResource("source-text/ot/Obad.xml")
+        URL url = getClass().getClassLoader().getResource("source-text/ot/ObadShort.xml")
         URI uri = url.toURI()
         Path obadiah = Paths.get(uri)
         return obadiah
@@ -47,4 +51,52 @@ class SourceTextConverterTest extends Specification {
         true
     }
 
+    def "Jackson Serializer"() {
+        given: "A sentence"
+        Sentence sentence = new Sentence("Don't Panic!")
+
+        when: "Converting to XML"
+        XmlMapper xmlMapper = new XmlMapper()
+        String xml = xmlMapper.writeValueAsString(sentence)
+
+        then: "Should be correct"
+        xml == "<Sentence numWords=\"2\"><w boldface=\"false\">Don't</w><w boldface=\"true\">Panic!</w></Sentence>"
+    }
+
+    static class Sentence
+    {
+        @JacksonXmlProperty(isAttribute=true)
+        public int numWords
+
+        @JacksonXmlElementWrapper(useWrapping = false)
+        @JacksonXmlProperty(isAttribute = false, localName = "w")
+        public List<Word> wordList
+
+        Sentence(String sentenceText) {
+            wordList = new ArrayList<>()
+
+            boolean boldFlag = false
+            String[] words = sentenceText.split(" ")
+            for (String myWord : words) {
+                Word word = new Word()
+                word.bodyText = myWord
+
+                word.bold  = boldFlag
+                boldFlag = !boldFlag
+
+                wordList.add(word)
+            }
+
+            numWords = wordList.size()
+        }
+    }
+
+    static class Word
+    {
+        @JacksonXmlProperty(isAttribute=true, localName="boldface")
+        public boolean bold
+
+        @JacksonXmlText
+        public String bodyText
+    }
 }
