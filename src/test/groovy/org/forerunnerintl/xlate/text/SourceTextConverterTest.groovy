@@ -4,6 +4,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText
+import com.heavyweightsoftware.util.StringHelper
 import spock.lang.Specification
 
 import java.nio.file.Path
@@ -48,7 +49,10 @@ class SourceTextConverterTest extends Specification {
         sourceTextConverter.convert(input, output)
 
         then: "Should be correct"
-        true
+        List<String> lines = StringHelper.pathToArray(output)
+        String ten = lines.get(10).trim()
+        ten.startsWith("<w>")
+        ten.endsWith("</w>")
     }
 
     def "Jackson Serializer"() {

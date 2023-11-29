@@ -4,14 +4,13 @@ import org.forerunnerintl.xlate.text.osis.OsisReader;
 import org.forerunnerintl.xlate.text.osis.OsisWriter;
 import org.forerunnerintl.xlate.text.sbl.SblReader;
 
-import javax.print.Doc;
 import java.nio.file.Path;
 
 public class SourceTextConverter {
     public static final String DEFAULT_BODY_TEXT = "(...)";
 
-    private SourceTextReader reader;
-    private SourceTextWriter writer;
+    private final SourceTextReader reader;
+    private final SourceTextWriter writer;
 
     public static SourceTextConverter getConverter(TextFormat input, TextFormat output) {
         SourceTextReader reader = switch (input) {
@@ -42,21 +41,18 @@ public class SourceTextConverter {
 
     private DocumentText convertText(DocumentText documentText) {
         SourceText sourceText = documentText.getSourceText();
-        sourceText.clear();;
-        sourceText.getDocumentBook().getChapters().parallelStream().forEach(chapter ->
-                convertChapter(chapter));
+        sourceText.clear();
+        sourceText.getDocumentBook().getChapters().parallelStream().forEach(this::convertChapter);
         return documentText;
     }
 
     private void convertChapter(DocumentChapter chapter) {
-        chapter.getVerses().parallelStream().forEach(verse ->
-                convertVerse(verse));
+        chapter.getVerses().parallelStream().forEach(this::convertVerse);
     }
 
     private void convertVerse(DocumentVerse verse) {
         verse.clear();
-        verse.getWords().parallelStream().forEach(word ->
-                convertWord(word));
+        verse.getWords().parallelStream().forEach(this::convertWord);
     }
 
     private void convertWord(DocumentWord word) {

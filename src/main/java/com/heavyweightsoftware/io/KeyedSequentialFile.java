@@ -71,10 +71,6 @@ public class KeyedSequentialFile {
         openFileChannel();
     }
 
-    protected void finalize() {
-        close();
-    }
-
     private void openFileChannel() {
         String dataFile = rootPath.toAbsolutePath().toString() + DATA_SUFFIX;
         dataPath = Paths.get(dataFile);
