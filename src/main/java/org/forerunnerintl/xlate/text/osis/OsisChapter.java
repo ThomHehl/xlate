@@ -14,6 +14,13 @@ public class OsisChapter extends DocumentChapter {
     @JacksonXmlElementWrapper(useWrapping = false)
     private List<OsisVerse> verse;
 
+    @Override
+    public String toString() {
+        return "OsisChapter{" +
+                "osisId='" + osisId + '\'' +
+                '}';
+    }
+
     public String getOsisId() {
         return osisId;
     }

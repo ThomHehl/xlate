@@ -29,5 +29,9 @@ class OsisReaderTest extends Specification {
 
         then: "Should match"
         book.chapters.size() == 1
+        OsisVerse verse = book.getOsisChapters().get(0).getOsisVerses().get(0)
+        verse.words.size() == 18
+        "2377" == verse.words.get(0).lemma
+        "l/4421" == verse.words.get(17).lemma
     }
 }

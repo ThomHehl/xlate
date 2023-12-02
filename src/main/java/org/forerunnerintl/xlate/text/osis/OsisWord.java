@@ -89,4 +89,14 @@ public class OsisWord extends DocumentWord {
     public void setType(String type) {
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return "OsisWord{" +
+                "id='" + id + '\'' +
+                ", lemma='" + lemma + '\'' +
+                ", sourceWord='" + sourceWord + '\'' +
+                ", bodyText='" + bodyText + '\'' +
+                '}';
+    }
 }

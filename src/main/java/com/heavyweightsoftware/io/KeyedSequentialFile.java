@@ -17,10 +17,10 @@ public class KeyedSequentialFile {
     private static final String     KEY_KEY_LENGTH = "KEY_LENGTH";
 
     private Path dataPath;
-    private int dataLength;
-    private int keyLength;
-    private int recordLength;
-    private Path rootPath;
+    private final int dataLength;
+    private final int keyLength;
+    private final int recordLength;
+    private final Path rootPath;
     private FileChannel fileChannel;
 
     /**
@@ -72,7 +72,7 @@ public class KeyedSequentialFile {
     }
 
     private void openFileChannel() {
-        String dataFile = rootPath.toAbsolutePath().toString() + DATA_SUFFIX;
+        String dataFile = rootPath.toAbsolutePath() + DATA_SUFFIX;
         dataPath = Paths.get(dataFile);
         try  {
             fileChannel = (FileChannel.open(dataPath, CREATE, READ, WRITE));
@@ -137,16 +137,6 @@ public class KeyedSequentialFile {
     public void deleteFile() {
         rootPath.toFile().delete();
         dataPath.toFile().delete();
-    }
-
-    /**
-     * Retrieve the data for the specified key
-     * @param key the key
-     * @return the data
-     */
-    public String getData(String key) {
-        String result = null;
-        return result;
     }
 
     /**

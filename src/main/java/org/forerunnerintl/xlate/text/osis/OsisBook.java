@@ -17,6 +17,14 @@ public class OsisBook extends DocumentBook {
     private String type;
 
     @Override
+    public String toString() {
+        return "OsisBook{" +
+                "osisId='" + osisId + '\'' +
+                ", type='" + type + '\'' +
+                '}';
+    }
+
+    @Override
     public List<DocumentChapter> getChapters() {
         List<DocumentChapter> result = Collections.unmodifiableList((List) getOsisChapters());
         return result;

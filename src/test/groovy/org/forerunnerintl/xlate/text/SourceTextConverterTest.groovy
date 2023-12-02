@@ -15,7 +15,7 @@ class SourceTextConverterTest extends Specification {
     private SourceTextConverter sourceTextConverter
 
     Path getObadiah() {
-        URL url = getClass().getClassLoader().getResource("source-text/ot/ObadShort.xml")
+        URL url = getClass().getClassLoader().getResource("source-text/ot/Obad.xml")
         URI uri = url.toURI()
         Path obadiah = Paths.get(uri)
         return obadiah
@@ -50,57 +50,8 @@ class SourceTextConverterTest extends Specification {
 
         then: "Should be correct"
         List<String> lines = StringHelper.pathToArray(output)
-        String ten = lines.get(10).trim()
-        ten.startsWith("<w>")
-        ten.endsWith("</w>")
-    }
-
-    def "Jackson Serializer"() {
-        given: "A sentence"
-        Sentence sentence = new Sentence("Don't Panic!")
-
-        when: "Converting to XML"
-        XmlMapper xmlMapper = new XmlMapper()
-        String xml = xmlMapper.writeValueAsString(sentence)
-
-        then: "Should be correct"
-        xml == "<Sentence numWords=\"2\"><w boldface=\"false\">Don't</w><w boldface=\"true\">Panic!</w></Sentence>"
-    }
-
-    static class Sentence
-    {
-        @JacksonXmlProperty(isAttribute=true)
-        public int numWords
-
-        @JacksonXmlElementWrapper(useWrapping = false)
-        @JacksonXmlProperty(isAttribute = false, localName = "w")
-        public List<Word> wordList
-
-        Sentence(String sentenceText) {
-            wordList = new ArrayList<>()
-
-            boolean boldFlag = false
-            String[] words = sentenceText.split(" ")
-            for (String myWord : words) {
-                Word word = new Word()
-                word.bodyText = myWord
-
-                word.bold  = boldFlag
-                boldFlag = !boldFlag
-
-                wordList.add(word)
-            }
-
-            numWords = wordList.size()
-        }
-    }
-
-    static class Word
-    {
-        @JacksonXmlProperty(isAttribute=true, localName="boldface")
-        public boolean bold
-
-        @JacksonXmlText
-        public String bodyText
+        String line = lines.get(30).trim()
+        line.startsWith("<w ")
+        line.endsWith("(...)</w>")
     }
 }

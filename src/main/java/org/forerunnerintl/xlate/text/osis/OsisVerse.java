@@ -1,5 +1,6 @@
 package org.forerunnerintl.xlate.text.osis;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import org.forerunnerintl.xlate.text.DocumentNote;
@@ -26,47 +27,59 @@ public class OsisVerse extends DocumentVerse {
     public void clear() {
         if (osisNotes == null) {
             osisNotes = new ArrayList<>();
-        } else {
-            osisNotes.clear();
+        }
+
+        if (osisWords == null) {
+            osisWords = new ArrayList<>();
         }
     }
 
-    public List<OsisNote> getOsisNotes() {
-        return osisNotes;
-    }
-
+    @JsonIgnore
     @Override
     public List<DocumentNote> getNotes() {
         List<DocumentNote> result = Collections.unmodifiableList((List) getOsisNotes());
         return result;
     }
 
+    @JsonIgnore
     @Override
     public void setNotes(List<DocumentNote> notes) {
         List<OsisNote> noteList = Collections.unmodifiableList((List) notes);
         setOsisNotes(noteList);
     }
 
-    public void setOsisNotes(List<OsisNote> osisNotes) {
-        this.osisNotes = osisNotes;
+    public synchronized List<OsisNote> getOsisNotes() {
+        return osisNotes == null ? osisNotes = new ArrayList<>() : osisNotes;
     }
 
+    public synchronized void setOsisNotes(List<OsisNote> osisNotes) {
+        if (this.osisNotes == null) {
+            this.osisNotes = new ArrayList<>();
+        }
+
+        this.osisNotes.addAll(osisNotes);
+    }
+
+    @JsonIgnore
     @Override
     public String getUniqueId() {
         return uniqueId;
     }
 
+    @JsonIgnore
     @Override
     public void setUniqueId(String uniqueId) {
         this.uniqueId = uniqueId;
     }
 
+    @JsonIgnore
     @Override
     public List<DocumentWord> getWords() {
         List<DocumentWord> result = (List) osisWords;
         return result;
     }
 
+    @JsonIgnore
     @Override
     public void setWords(List<DocumentWord> words) {
         List<OsisWord> wordList = (List) words;
@@ -81,11 +94,22 @@ public class OsisVerse extends DocumentVerse {
         this.segment = segment;
     }
 
-    public List<OsisWord> getOsisWords() {
-        return osisWords;
+    public synchronized List<OsisWord> getOsisWords() {
+        return osisWords == null ? osisWords = new ArrayList<>() : osisWords;
     }
 
-    public void setOsisWords(List<OsisWord> words) {
-        this.osisWords = words;
+    public synchronized void setOsisWords(List<OsisWord> words) {
+        if (osisWords == null) {
+            osisWords = new ArrayList<>();
+        }
+
+        this.osisWords.addAll(words);
+    }
+
+    @Override
+    public String toString() {
+        return "OsisVerse{" +
+                "uniqueId='" + uniqueId + '\'' +
+                '}';
     }
 }
