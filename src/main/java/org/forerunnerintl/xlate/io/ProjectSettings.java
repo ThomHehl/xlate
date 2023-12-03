@@ -8,12 +8,15 @@ import java.nio.file.Paths;
 import java.util.Properties;
 
 public class ProjectSettings {
+    private static final String        DEFAULT_REFERENCE = "Gen 1";
     private static final String         DIR_DATA = "data";
     private static final String         DIR_NEW_TESTAMENT = "NT";
     private static final String         DIR_OLD_TESTAMENT = "OT";
     private static final String         DIR_SOURCE_TEXT = "source-text";
     private static final String         DIR_TEXT = "text";
     private static final String         FILE_NAME = "xlate.settings";
+
+    private static final String         KEY_LAST_REF = "LAST_REFERENCE";
     private static final String         KEY_NT_FORMAT = "NT_FORMAT";
     private static final String         KEY_OT_FORMAT = "OT_FORMAT";
     private static final String         KEY_TITLE = "TITLE";
@@ -94,6 +97,15 @@ public class ProjectSettings {
      */
     public Path getProjectDirectory() {
         return settingsDirectory;
+    }
+
+    public String getLastReferenceLocation() {
+        String lastRef = properties.getProperty(KEY_LAST_REF);
+        if (lastRef == null) {
+            lastRef = DEFAULT_REFERENCE;
+        }
+
+        return lastRef;
     }
 
     /**

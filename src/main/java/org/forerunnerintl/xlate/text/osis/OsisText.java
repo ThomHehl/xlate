@@ -1,5 +1,6 @@
 package org.forerunnerintl.xlate.text.osis;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import org.forerunnerintl.xlate.text.DocumentBook;
 import org.forerunnerintl.xlate.text.SourceText;
@@ -7,11 +8,13 @@ import org.forerunnerintl.xlate.text.SourceText;
 public class OsisText extends SourceText {
 
     private OsisHeader header;
-    @JacksonXmlProperty(localName = "lang")
+    @JacksonXmlProperty(isAttribute = true, localName = "lang")
     private String language;
     @JacksonXmlProperty(localName = "div")
     private OsisBook osisBook;
+    @JacksonXmlProperty(isAttribute = true)
     private String osisIDWork;
+    @JacksonXmlProperty(isAttribute = true)
     private String osisRefWork;
 
     @Override
@@ -61,11 +64,13 @@ public class OsisText extends SourceText {
         this.language = language;
     }
 
+    @JsonIgnore
     @Override
     public DocumentBook getDocumentBook() {
         return getOsisBook();
     }
 
+    @JsonIgnore
     @Override
     public void setDocumentBook(DocumentBook documentBook) {
         setOsisBook((OsisBook) documentBook);

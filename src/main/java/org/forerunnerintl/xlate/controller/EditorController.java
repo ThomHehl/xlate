@@ -10,4 +10,6 @@ public interface EditorController {
     void createProject(File projectDir);
 
     void convertSource(ProjectSettings projectSettings);
+
+    void loadBook(String bookCode);
 }

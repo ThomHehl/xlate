@@ -21,6 +21,7 @@ public class OsisReader implements SourceTextReader {
         try {
             osisDocument = xmlMapper.readValue(docFile, OsisDocument.class);
         } catch (IOException ioe) {
+            ioe.printStackTrace();
             throw new RuntimeException(ioe);
         }
 

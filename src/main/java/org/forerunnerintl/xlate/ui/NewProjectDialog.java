@@ -32,7 +32,7 @@ public class NewProjectDialog extends JDialog {
         addSourceTextDropDowns();
         addButtons();
 
-        setSize(Constants.DIALOG_SIZE);
+        setSize(UiConstants.DIALOG_SIZE);
         setVisible(true);
     }
 
@@ -40,24 +40,14 @@ public class NewProjectDialog extends JDialog {
         JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout());
 
-        JButton btnCancel = new JButton(Constants.TEXT_CANCEL);
-        btnCancel.setPreferredSize(Constants.BUTTON_SIZE);
-        btnCancel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cancelButtonClicked();
-            }
-        });
+        JButton btnCancel = new JButton(UiConstants.TEXT_CANCEL);
+        btnCancel.setPreferredSize(UiConstants.BUTTON_SIZE);
+        btnCancel.addActionListener(e -> cancelButtonClicked());
         panel.add(btnCancel);
 
-        JButton btnCreate = new JButton(Constants.TEXT_CREATE);
-        btnCreate.setPreferredSize(Constants.BUTTON_SIZE);
-        btnCreate.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                createButtonClicked();
-            }
-        });
+        JButton btnCreate = new JButton(UiConstants.TEXT_CREATE);
+        btnCreate.setPreferredSize(UiConstants.BUTTON_SIZE);
+        btnCreate.addActionListener(e -> createButtonClicked());
         panel.add(btnCreate);
 
         add(panel);
@@ -72,12 +62,12 @@ public class NewProjectDialog extends JDialog {
         panel.add(txtTitle);
 
         panel.add(new Label(FORMAT_OT));
-        cmbOt = new JComboBox<String>(FORMAT_NAMES);
+        cmbOt = new JComboBox<>(FORMAT_NAMES);
         cmbOt.setSelectedItem(FORMAT_OSIS);
         panel.add(cmbOt);
 
         panel.add(new Label(FORMAT_NT));
-        cmbNt = new JComboBox<String>(FORMAT_NAMES);
+        cmbNt = new JComboBox<>(FORMAT_NAMES);
         cmbNt.setSelectedItem(FORMAT_SBL);
         panel.add(cmbNt);
 

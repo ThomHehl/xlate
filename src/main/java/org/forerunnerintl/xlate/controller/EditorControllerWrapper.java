@@ -48,8 +48,20 @@ public class EditorControllerWrapper implements EditorController {
     }
 
     @Override
-    public void createProject(File projectDir) {
+    public void loadBook(String bookCode) {
+        Thread startThread = new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                Thread.yield();
+                editorController.loadBook(bookCode);
+            }
+        };
+        startThread.start();
+    }
 
+    @Override
+    public void createProject(File projectDir) {
         Thread startThread = new Thread() {
             @Override
             public void run() {
@@ -58,6 +70,5 @@ public class EditorControllerWrapper implements EditorController {
             }
         };
         startThread.start();
-
     }
 }

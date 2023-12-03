@@ -14,6 +14,12 @@ public class OsisNote extends DocumentNote {
     @JacksonXmlProperty(localName = "rdg")
     private OsisReading reading;
 
+    public OsisNote() { }
+
+    public OsisNote(String text) {
+        this.text = text;
+    }
+
     public String getCatchWord() {
         return catchWord;
     }

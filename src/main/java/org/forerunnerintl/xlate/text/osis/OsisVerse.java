@@ -1,6 +1,7 @@
 package org.forerunnerintl.xlate.text.osis;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import org.forerunnerintl.xlate.text.DocumentNote;
@@ -15,8 +16,9 @@ public class OsisVerse extends DocumentVerse {
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "note")
     private List<OsisNote> osisNotes;
-    @JacksonXmlProperty(localName = "osisID")
+    @JacksonXmlProperty(isAttribute = true, localName = "osisID")
     private String uniqueId;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JacksonXmlProperty(localName = "seg")
     private String segment;
     @JacksonXmlElementWrapper(useWrapping = false)
@@ -27,11 +29,15 @@ public class OsisVerse extends DocumentVerse {
     public void clear() {
         if (osisNotes == null) {
             osisNotes = new ArrayList<>();
+        } else {
+            osisNotes.clear();;
         }
 
         if (osisWords == null) {
             osisWords = new ArrayList<>();
         }
+
+        segment = null;
     }
 
     @JsonIgnore

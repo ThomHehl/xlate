@@ -1,8 +1,11 @@
 package org.forerunnerintl.xlate.text.osis;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.forerunnerintl.xlate.text.DocumentText;
+import org.forerunnerintl.xlate.text.SourceText;
 
 public class OsisDocument extends DocumentText {
+    private OsisText osisText;
     private String schemaLocation;
 
     public String getSchemaLocation() {
@@ -14,10 +17,22 @@ public class OsisDocument extends DocumentText {
     }
 
     public OsisText getOsisText() {
-        return (OsisText) getSourceText();
+        return osisText;
     }
 
-    public void setOsisText(OsisText sourceText) {
-        setSourceText(sourceText);
+    public void setOsisText(OsisText osisText) {
+        this.osisText = osisText;
+    }
+
+    @JsonIgnore
+    @Override
+    public SourceText getSourceText() {
+        return getOsisText();
+    }
+
+    @JsonIgnore
+    @Override
+    public void setSourceText(SourceText sourceText) {
+        setOsisText((OsisText) sourceText);
     }
 }

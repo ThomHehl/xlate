@@ -50,8 +50,8 @@ class SourceTextConverterTest extends Specification {
 
         then: "Should be correct"
         List<String> lines = StringHelper.pathToArray(output)
-        String line = lines.get(30).trim()
+        String line = lines.get(7).trim()
         line.startsWith("<w ")
-        line.endsWith("(...)</w>")
+        line.endsWith(">(...)</w>")
     }
 }

@@ -1,5 +1,6 @@
 package org.forerunnerintl.xlate.text.osis;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import org.forerunnerintl.xlate.text.DocumentBook;
@@ -12,8 +13,9 @@ public class OsisBook extends DocumentBook {
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "chapter")
     private List<OsisChapter> osisChapters;
-    @JacksonXmlProperty(localName = "osisID")
+    @JacksonXmlProperty(isAttribute = true, localName = "osisID")
     private String osisId;
+    @JacksonXmlProperty(isAttribute = true)
     private String type;
 
     @Override
@@ -24,12 +26,14 @@ public class OsisBook extends DocumentBook {
                 '}';
     }
 
+    @JsonIgnore
     @Override
     public List<DocumentChapter> getChapters() {
         List<DocumentChapter> result = Collections.unmodifiableList((List) getOsisChapters());
         return result;
     }
 
+    @JsonIgnore
     @Override
     public void setChapters(List<DocumentChapter> chapters) {
         List<OsisChapter> chapterList = Collections.unmodifiableList((List) chapters);
@@ -62,11 +66,13 @@ public class OsisBook extends DocumentBook {
         this.type = type;
     }
 
+    @JsonIgnore
     @Override
     public String getUniqueID() {
         return getOsisId();
     }
 
+    @JsonIgnore
     @Override
     public void setUniqueID(String uniqueID) {
         setOsisId(uniqueID);

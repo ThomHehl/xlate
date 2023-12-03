@@ -21,6 +21,14 @@ class OsisVerseTest extends Specification {
         verse = getOsisVerse()
     }
 
+    def "Clear"() {
+        when: "Clearing"
+        verse.clear()
+
+        then: "Should be clear"
+        verse.getOsisNotes().isEmpty()
+    }
+
     def "getNotes"() {
         when: "Getting the notes"
         List<OsisNote> noteList = verse.getOsisNotes()

@@ -1,5 +1,6 @@
 package org.forerunnerintl.xlate.text.osis;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 import org.forerunnerintl.xlate.text.DocumentWord;
@@ -13,6 +14,9 @@ public class OsisWord extends DocumentWord {
     private String morph;
     @JacksonXmlProperty(isAttribute = true, localName = "n")
     private String noteId;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JacksonXmlProperty(localName = "seg")
+    private String segment;
     @JacksonXmlProperty(isAttribute = true, localName = "x-source-word")
     private String sourceWord;
     @JacksonXmlProperty(isAttribute = true)
@@ -68,6 +72,14 @@ public class OsisWord extends DocumentWord {
     @Override
     public void setNoteId(String noteId) {
         this.noteId = noteId;
+    }
+
+    public String getSegment() {
+        return segment;
+    }
+
+    public void setSegment(String segment) {
+        this.segment = segment;
     }
 
     @Override
