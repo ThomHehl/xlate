@@ -1,6 +1,7 @@
 package org.forerunnerintl.xlate.ui;
 
 import com.heavyweightsoftware.util.Pair;
+import org.forerunnerintl.xlate.controller.EditWordCommand;
 import org.forerunnerintl.xlate.controller.EditorController;
 import org.forerunnerintl.xlate.controller.EditorControllerWrapper;
 import org.forerunnerintl.xlate.io.ProjectSettings;
@@ -14,18 +15,20 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainEditorPane extends JPanel {
+public class MainEditorPane extends JPanel
+                            implements MouseListener {
     private static final int    ANSWER_YES = 0;
 
     public static final String  NAME_DEFINITION = "Definition";
     public static final String  NAME_TRANSLATION_NOTE = "Translation Note";
-    public static final String  RICH_TEXT = "text/rtf";
     public static final String  STYLE_BODY_TEXT = "bodyText";
     public static final String  STYLE_VERSE_NUMBER = "verseNumber";
 
@@ -42,7 +45,8 @@ public class MainEditorPane extends JPanel {
                             wordsByOffset = new HashMap<>();
     private Style           verseNumber;
 
-    private JEditorPane     editMainEditor;
+    private ToolTipTextEditor
+                            editMainEditor;
     private JScrollPane     scrollMainEditor;
     private JTabbedPane     tabbedPane;
 
@@ -122,8 +126,10 @@ public class MainEditorPane extends JPanel {
     }
 
     private void buildEditorPane() {
-        editMainEditor = new JEditorPane(RICH_TEXT, "");
+        editMainEditor = new ToolTipTextEditor(new SourceWordToolTipProvider());
         editMainEditor.setEditable(false);
+        editMainEditor.setToolTipText("");
+        editMainEditor.addMouseListener(this);
 
         buildStyledDocument();
 
@@ -362,9 +368,13 @@ public class MainEditorPane extends JPanel {
 
             OsisVerse verse = verseList.get(ix);
             for(OsisWord word : verse.getOsisWords()) {
-                int offset = sb.length();
-                wordsByOffset.put(offset, word);
                 String text = word.getBodyText();
+                int offset = sb.length();
+                int endOffset = offset + text.length();
+                while (offset < endOffset) {
+                    wordsByOffset.put(offset, word);
+                    offset++;
+                }
                 sb.append(text);
                 sb.append(" ");
 
@@ -405,5 +415,56 @@ public class MainEditorPane extends JPanel {
         }
     }
 
+    @Override
+    public void mouseClicked(MouseEvent event) {
+        int offset = editMainEditor.viewToModel2D(event.getPoint());
+        OsisWord word = wordsByOffset.get(offset);
+        if (word != null) {
+            EditTranslatedWordDialog dialog = new EditTranslatedWordDialog(owner, word, "", "");
+            EditWordCommand cmd = dialog.getEditWordCommand();
+            if (cmd != null) {
+                System.err.println(cmd);
+            }
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+
     protected record VerseData(String indexText, int indexOffset) { }
+
+    private class SourceWordToolTipProvider implements ToolTipProvider {
+
+        @Override
+        public String getToolTipText(int offset) {
+            String result = null;
+
+            // did we get a valid view to model position?
+            if(offset >= 0){
+                OsisWord word = wordsByOffset.get(offset);
+                if (word != null) {
+                    result = word.getLemma();
+                }
+            }
+
+            return result;
+        }
+    }
 }
