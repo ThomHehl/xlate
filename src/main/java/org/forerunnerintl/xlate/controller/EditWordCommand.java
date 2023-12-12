@@ -1,5 +1,6 @@
 package org.forerunnerintl.xlate.controller;
 
+import org.forerunnerintl.xlate.text.VerseReference;
 import org.forerunnerintl.xlate.text.osis.OsisWord;
 
 public class EditWordCommand {
@@ -7,6 +8,7 @@ public class EditWordCommand {
     private String altDefinition;
     private String primaryDefinition;
     private String text;
+    private VerseReference verseReference;
     private OsisWord word;
 
     @Override
@@ -52,6 +54,14 @@ public class EditWordCommand {
         this.text = text;
     }
 
+    public VerseReference getVerseReference() {
+        return verseReference;
+    }
+
+    public void setVerseReference(VerseReference verseReference) {
+        this.verseReference = verseReference;
+    }
+
     public OsisWord getWord() {
         return word;
     }
@@ -61,8 +71,9 @@ public class EditWordCommand {
     }
 
     public enum CommandType {
+        AddNote,
         EditText,
         InsertAfter,
-        InsertBefore
+        InsertBefore,
     }
 }

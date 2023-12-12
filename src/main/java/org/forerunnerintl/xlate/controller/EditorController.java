@@ -1,6 +1,7 @@
 package org.forerunnerintl.xlate.controller;
 
-import org.forerunnerintl.xlate.io.ProjectSettings;
+import org.forerunnerintl.xlate.io.ProjectSettingsImpl;
+import org.forerunnerintl.xlate.text.osis.OsisDocument;
 
 import java.io.File;
 
@@ -9,7 +10,9 @@ public interface EditorController {
 
     void createProject(File projectDir);
 
-    void convertSource(ProjectSettings projectSettings);
+    void convertSource(ProjectSettingsImpl projectSettings);
 
     void loadBook(String bookCode);
+
+    void editDocument(OsisDocument document, EditWordCommand cmd);
 }

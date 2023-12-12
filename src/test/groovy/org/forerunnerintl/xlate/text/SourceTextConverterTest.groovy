@@ -52,6 +52,6 @@ class SourceTextConverterTest extends Specification {
         List<String> lines = StringHelper.pathToArray(output)
         String line = lines.get(7).trim()
         line.startsWith("<w ")
-        line.endsWith(">(...)</w>")
+        line.endsWith(">" + DocumentWord.DEFAULT_BODY_TEXT + "</w>")
     }
 }

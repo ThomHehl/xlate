@@ -1,6 +1,8 @@
 package org.forerunnerintl.xlate.text;
 
 public abstract class DocumentWord {
+    public static final String DEFAULT_BODY_TEXT = "(...)";
+
     public abstract String getBodyText();
 
     public abstract void setBodyText(String bodyText);

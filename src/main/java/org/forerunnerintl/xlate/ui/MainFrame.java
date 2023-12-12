@@ -16,11 +16,20 @@ public class MainFrame extends JFrame implements ComponentListener {
         buildMenu();
 
         setTitle("Xlate -- Bible Translation Assistant");
+        setLocations(this);
 
         mainEditorPanel = new MainEditorPane(this);
         add(mainEditorPanel, BorderLayout.CENTER);
 
         addComponentListener(this);
+    }
+
+    private void setLocations(MainFrame frame) {
+        Rectangle bounds = frame.getGraphicsConfiguration().getBounds();
+        Dimension dimension = bounds.getSize();
+        int x = (int) (((dimension.getWidth() - frame.getWidth()) / 2) + bounds.getMinX());
+        int y = (int) (((dimension.getHeight() - frame.getHeight()) / 2) + bounds.getMinY());
+        setLocation(x, y);
     }
 
     private void buildMenu() {

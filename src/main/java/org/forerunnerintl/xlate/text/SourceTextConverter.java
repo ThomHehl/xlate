@@ -7,8 +7,6 @@ import org.forerunnerintl.xlate.text.sbl.SblReader;
 import java.nio.file.Path;
 
 public class SourceTextConverter {
-    public static final String DEFAULT_BODY_TEXT = "(...)";
-
     private final SourceTextReader reader;
     private final SourceTextWriter writer;
 
@@ -58,6 +56,6 @@ public class SourceTextConverter {
     private void convertWord(DocumentWord word) {
         String sourceWord = word.getBodyText();
         word.setSourceWord(sourceWord);
-        word.setBodyText(DEFAULT_BODY_TEXT);
+        word.setBodyText(DocumentWord.DEFAULT_BODY_TEXT);
     }
 }

@@ -5,7 +5,7 @@ import spock.lang.Specification
 import java.nio.file.Path
 import java.nio.file.Paths
 
-class KeyedSequentialFileTest extends Specification {
+class KeyedSequentialFileImplTest extends Specification {
     public static final String      STRING_VALUES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
     public static final char[]      CHARACTER_VALUES = STRING_VALUES.toCharArray()
     public static final String      FILE_NAME = "ksdstest"
@@ -29,7 +29,7 @@ class KeyedSequentialFileTest extends Specification {
         String[] keys = generateKeys(numRecords)
 
         when: "Inserting records"
-        KeyedSequentialFile file = new KeyedSequentialFile(keyedSequentialFile, KEY_LENGTH, DATA_LENGTH)
+        KeyedSequentialFileImpl file = new KeyedSequentialFileImpl(keyedSequentialFile, KEY_LENGTH, DATA_LENGTH)
         for (int ix = 0; ix < numRecords; ++ix) {
             file.insert(keys[ix], data[ix])
         }
@@ -67,7 +67,7 @@ class KeyedSequentialFileTest extends Specification {
         final int numRecords = 20;
         String[] data = generateData(numRecords)
         String[] keys = generateKeys(numRecords)
-        KeyedSequentialFile file = new KeyedSequentialFile(keyedSequentialFile, KEY_LENGTH, DATA_LENGTH)
+        KeyedSequentialFileImpl file = new KeyedSequentialFileImpl(keyedSequentialFile, KEY_LENGTH, DATA_LENGTH)
         for (int ix = 0; ix < numRecords; ++ix) {
             file.insert(keys[ix], data[ix])
         }
@@ -75,7 +75,7 @@ class KeyedSequentialFileTest extends Specification {
         file = null;
 
         when: "Reopening the file"
-        file = new KeyedSequentialFile(keyedSequentialFile)
+        file = new KeyedSequentialFileImpl(keyedSequentialFile)
 
         then: "Data should be correct"
         KEY_LENGTH == file.getKeyLength()
@@ -100,7 +100,7 @@ class KeyedSequentialFileTest extends Specification {
         final int numRecords = 20;
         String[] data = generateData(numRecords)
         String[] keys = generateKeys(numRecords)
-        KeyedSequentialFile file = new KeyedSequentialFile(keyedSequentialFile, KEY_LENGTH, DATA_LENGTH)
+        KeyedSequentialFileImpl file = new KeyedSequentialFileImpl(keyedSequentialFile, KEY_LENGTH, DATA_LENGTH)
         for (int ix = 0; ix < numRecords; ++ix) {
             file.insert(keys[ix], data[ix])
         }

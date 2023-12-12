@@ -1,6 +1,7 @@
 package org.forerunnerintl.xlate.ui;
 
 import org.forerunnerintl.xlate.controller.EditWordCommand;
+import org.forerunnerintl.xlate.text.VerseReference;
 import org.forerunnerintl.xlate.text.osis.OsisWord;
 
 import javax.swing.*;
@@ -39,20 +40,26 @@ public class EditTranslatedWordDialog extends JDialog
     private String altDefinition;
     private String primaryDefinition;
     private boolean definitionProvided;
+    private VerseReference verseReference;
     private OsisWord word;
 
-    public EditTranslatedWordDialog(Frame owner, OsisWord word, String primaryDefinition, String altDefinition) {
-        super(owner, buildTitle(word), true);
-        this.word = word;
+    public EditTranslatedWordDialog(Frame owner, EditWordCommand editWordCommand) {
+        super(owner, buildTitle(editWordCommand.getWord()), true);
+        this.verseReference = editWordCommand.getVerseReference();
+        this.word = editWordCommand.getWord();
 
-        if (primaryDefinition == null | primaryDefinition.equals("")) {
+        setLocations(owner);
+
+        String def = editWordCommand.getPrimaryDefinition();
+        if (def == null | def.equals("")) {
             this.primaryDefinition = "";
-        }
-        else {
+        } else {
             definitionProvided = true;
-            this.primaryDefinition = primaryDefinition;
+            this.primaryDefinition = def;
         }
-        this.altDefinition = altDefinition == null | altDefinition.equals("") ? "" : altDefinition;
+
+        def = editWordCommand.getAltDefinition();
+        this.altDefinition = def == null | def.equals("") ? "" : def;
 
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
         createRadioButtonGroup();
@@ -61,6 +68,14 @@ public class EditTranslatedWordDialog extends JDialog
 
         setSize(UiConstants.DIALOG_SIZE);
         setVisible(true);
+    }
+
+    private void setLocations(Frame owner) {
+        Rectangle bounds = owner.getGraphicsConfiguration().getBounds();
+        Dimension dimension = bounds.getSize();
+        int x = (int) (((dimension.getWidth() - owner.getWidth()) / 2) + bounds.getMinX());
+        int y = (int) (((dimension.getHeight() - owner.getHeight()) / 2) + bounds.getMinY());
+        setLocation(x, y);
     }
 
     private static String buildTitle(OsisWord word) {
@@ -157,7 +172,6 @@ public class EditTranslatedWordDialog extends JDialog
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        System.err.println(event.getActionCommand());
         switch (event.getActionCommand()) {
             case TEXT_CANCEL:
                 cancelButtonClicked();
@@ -193,6 +207,8 @@ public class EditTranslatedWordDialog extends JDialog
 
         editWordCommand.setWord(word);
         editWordCommand.setCommandType(getCommandType());
+        editWordCommand.setVerseReference(verseReference);
+
         switch (editWordCommand.getCommandType()) {
             case EditText:
                 editWordCommand.setPrimaryDefinition(txtPrimaryDefinition.getText());

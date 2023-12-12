@@ -3,11 +3,11 @@ package org.forerunnerintl.xlate.io
 import org.forerunnerintl.xlate.text.TextFormat
 import spock.lang.Specification
 
-class ProjectSettingsTest extends Specification {
-    private ProjectSettings projectSettings
+class ProjectSettingsImplTest extends Specification {
+    private ProjectSettingsImpl projectSettings
 
     void setup() {
-        projectSettings = new ProjectSettings();
+        projectSettings = new ProjectSettingsImpl();
     }
 
     def "NT format"() {

@@ -1,6 +1,7 @@
 package org.forerunnerintl.xlate.controller;
 
-import org.forerunnerintl.xlate.io.ProjectSettings;
+import org.forerunnerintl.xlate.io.ProjectSettingsImpl;
+import org.forerunnerintl.xlate.text.osis.OsisDocument;
 import org.forerunnerintl.xlate.ui.MainEditorPane;
 
 import java.io.File;
@@ -18,6 +19,7 @@ public class EditorControllerWrapper implements EditorController {
            }
        };
        startThread.start();
+       Thread.yield();
 
     }
 
@@ -36,7 +38,7 @@ public class EditorControllerWrapper implements EditorController {
     }
 
     @Override
-    public void convertSource(ProjectSettings projectSettings) {
+    public void convertSource(ProjectSettingsImpl projectSettings) {
         Thread startThread = new Thread() {
             @Override
             public void run() {
@@ -55,6 +57,19 @@ public class EditorControllerWrapper implements EditorController {
                 super.run();
                 Thread.yield();
                 editorController.loadBook(bookCode);
+            }
+        };
+        startThread.start();
+    }
+
+    @Override
+    public void editDocument(OsisDocument document, EditWordCommand cmd) {
+        Thread startThread = new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                Thread.yield();
+                editorController.editDocument(document, cmd);
             }
         };
         startThread.start();

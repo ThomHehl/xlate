@@ -1,10 +1,12 @@
 package org.forerunnerintl.xlate.ui;
 
 import com.heavyweightsoftware.util.Pair;
+import com.heavyweightsoftware.util.RangeLookup;
 import org.forerunnerintl.xlate.controller.EditWordCommand;
 import org.forerunnerintl.xlate.controller.EditorController;
 import org.forerunnerintl.xlate.controller.EditorControllerWrapper;
-import org.forerunnerintl.xlate.io.ProjectSettings;
+import org.forerunnerintl.xlate.io.ProjectSettingsImpl;
+import org.forerunnerintl.xlate.text.VerseReference;
 import org.forerunnerintl.xlate.text.osis.OsisChapter;
 import org.forerunnerintl.xlate.text.osis.OsisDocument;
 import org.forerunnerintl.xlate.text.osis.OsisVerse;
@@ -41,6 +43,8 @@ public class MainEditorPane extends JPanel
     private Style           bodyText;
     private DefaultStyledDocument
                             styledDocument;
+    private RangeLookup<VerseReference>
+                            referenceByOffset = new RangeLookup<>();
     private Map<Integer, OsisWord>
                             wordsByOffset = new HashMap<>();
     private Style           verseNumber;
@@ -254,7 +258,7 @@ public class MainEditorPane extends JPanel
         return choice == ANSWER_YES;
     }
 
-    public void newProject(ProjectSettings projectSettings) {
+    public void newProject(ProjectSettingsImpl projectSettings) {
         NewProjectDialog dialog = new NewProjectDialog(owner);
         if (dialog.isCreating()) {
             projectSettings.setTitle(dialog.getTitle());
@@ -356,13 +360,16 @@ public class MainEditorPane extends JPanel
 
     private void setChapterText(OsisChapter osisChapter) {
         editMainEditor.setText("");
+        referenceByOffset.clear();
+        wordsByOffset.clear();
         List<OsisVerse> verseList = osisChapter.getOsisVerses();
         List<VerseData> verseDataList = new ArrayList<>(verseList.size());
         StringBuilder sb = new StringBuilder();
 
         for (int ix = 0; ix < verseList.size(); ++ix) {
             int numStart = sb.length();
-            String verseNum = Integer.toString(ix + 1);
+            int verseNumber = ix + 1;
+            String verseNum = Integer.toString(verseNumber);
             sb.append(verseNum);
             sb.append(" ");
 
@@ -384,9 +391,19 @@ public class MainEditorPane extends JPanel
 
             sb.setLength(sb.length() - 1);
             sb.append("\n");
+
+            addReferenceEntry(osisChapter.getOsisId(), verseNumber, numStart, sb.length());
         }
 
         setStyledText(sb.toString(), verseDataList);
+    }
+
+    private void addReferenceEntry(String osisId, int verseNumber, int start, int end) {
+        String[] parts = osisId.split("\\.");
+        VerseReference verseReference = new VerseReference(parts[0], parts[1], verseNumber);
+
+        RangeLookup.RangeEntry<VerseReference> entry = new RangeLookup.RangeEntry<>(start, end, verseReference);
+        referenceByOffset.add(entry);
     }
 
     private void setStyledText(String text, List<VerseData> verseDataList) {
@@ -418,12 +435,21 @@ public class MainEditorPane extends JPanel
     @Override
     public void mouseClicked(MouseEvent event) {
         int offset = editMainEditor.viewToModel2D(event.getPoint());
+        VerseReference verseReference = referenceByOffset.get(offset).value();
         OsisWord word = wordsByOffset.get(offset);
+
+        EditWordCommand editWord = new EditWordCommand();
+        editWord.setPrimaryDefinition("");
+        editWord.setAltDefinition("");
+        editWord.setVerseReference(verseReference);
+        editWord.setWord(word);
+
         if (word != null) {
-            EditTranslatedWordDialog dialog = new EditTranslatedWordDialog(owner, word, "", "");
+            EditTranslatedWordDialog dialog = new EditTranslatedWordDialog(owner, editWord);
             EditWordCommand cmd = dialog.getEditWordCommand();
             if (cmd != null) {
                 System.err.println(cmd);
+                editorController.editDocument(document, cmd);
             }
         }
     }
