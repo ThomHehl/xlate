@@ -8,17 +8,22 @@ import org.forerunnerintl.xlate.text.DocumentWord;
 public class OsisWord extends DocumentWord {
     @JacksonXmlProperty(isAttribute = true)
     private String id;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JacksonXmlProperty(isAttribute = true)
     private String lemma;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JacksonXmlProperty(isAttribute = true)
     private String morph;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JacksonXmlProperty(isAttribute = true, localName = "n")
     private String noteId;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JacksonXmlProperty(localName = "seg")
     private String segment;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JacksonXmlProperty(isAttribute = true, localName = "x-source-word")
     private String sourceWord;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JacksonXmlProperty(isAttribute = true)
     private String type;
     @JacksonXmlText

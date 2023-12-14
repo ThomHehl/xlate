@@ -22,7 +22,8 @@ public class PreferredTranslationFile {
     }
 
     public TranslationEntry get(String key) {
-        String[] record = keyedSequentialFile.get(key);
+        String fileKey = rightPPad(key, ProjectFilesImpl.PREFERRED_TRANSLATION_KEY_LENGTH);
+        String[] record = keyedSequentialFile.get(fileKey);
 
         TranslationEntry result;
         if (record == null) {

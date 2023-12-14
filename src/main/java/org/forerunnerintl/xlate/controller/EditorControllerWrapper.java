@@ -1,10 +1,12 @@
 package org.forerunnerintl.xlate.controller;
 
 import org.forerunnerintl.xlate.io.ProjectSettingsImpl;
+import org.forerunnerintl.xlate.note.TranslationEntry;
 import org.forerunnerintl.xlate.text.osis.OsisDocument;
 import org.forerunnerintl.xlate.ui.MainEditorPane;
 
 import java.io.File;
+import java.util.concurrent.Future;
 
 public class EditorControllerWrapper implements EditorController {
     private EditorController editorController;
@@ -47,6 +49,11 @@ public class EditorControllerWrapper implements EditorController {
             }
         };
         startThread.start();
+    }
+
+    @Override
+    public Future<TranslationEntry> getPreferredTranslation(OsisDocument document, String key) {
+        return editorController.getPreferredTranslation(document, key);
     }
 
     @Override

@@ -439,8 +439,7 @@ public class MainEditorPane extends JPanel
         OsisWord word = wordsByOffset.get(offset);
 
         EditWordCommand editWord = new EditWordCommand();
-        editWord.setPrimaryDefinition("");
-        editWord.setAltDefinition("");
+        editWord.setTranslationEntryFuture(editorController.getPreferredTranslation(document, word.getLemma()));
         editWord.setVerseReference(verseReference);
         editWord.setWord(word);
 
@@ -448,7 +447,6 @@ public class MainEditorPane extends JPanel
             EditTranslatedWordDialog dialog = new EditTranslatedWordDialog(owner, editWord);
             EditWordCommand cmd = dialog.getEditWordCommand();
             if (cmd != null) {
-                System.err.println(cmd);
                 editorController.editDocument(document, cmd);
             }
         }

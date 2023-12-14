@@ -64,7 +64,9 @@ public class TranslationEntry {
             sb.append(alt);
             sb.append("|");
         }
-        sb.setLength(sb.length() -1);
+        if (!sb.isEmpty()) {
+            sb.setLength(sb.length() -1);
+        }
 
         return sb.toString();
     }

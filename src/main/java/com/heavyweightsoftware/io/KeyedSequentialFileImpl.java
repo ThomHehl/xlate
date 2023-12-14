@@ -12,7 +12,7 @@ import static java.nio.file.StandardOpenOption.*;
 
 public class KeyedSequentialFileImpl implements KeyedSequentialFile {
     private static final String     DATA_SUFFIX = ".data";
-    private static final char       FILL_CHAR = '.';
+    private static final char       FILL_CHAR = '~';
     private static final String     KEY_DATA_LENGTH = "DATA_LENGTH";
     private static final String     KEY_KEY_LENGTH = "KEY_LENGTH";
 
@@ -227,7 +227,7 @@ public class KeyedSequentialFileImpl implements KeyedSequentialFile {
             data = data.substring(0, dataLength);
         } else if (data.length() < dataLength) {
             StringBuilder sb = new StringBuilder(dataLength);
-            sb.append(dataLength);
+            sb.append(data);
             while (sb.length() < dataLength) {
                 sb.append(FILL_CHAR);
             }
@@ -340,8 +340,19 @@ public class KeyedSequentialFileImpl implements KeyedSequentialFile {
         result[0] = new String(keyBuff);
 
         buff.get(dataBuff, 0, dataLength);
-        result[1] = new String(dataBuff);
+        result[1] = trimData(dataBuff);
 
+        return result;
+    }
+
+    private String trimData(byte[] dataBuff) {
+        String str = new String(dataBuff);
+        int idx = str.length() - 1;
+        while (str.charAt(idx) == FILL_CHAR) {
+            idx--;
+        }
+
+        String result = str.substring(0, idx + 1);
         return result;
     }
 

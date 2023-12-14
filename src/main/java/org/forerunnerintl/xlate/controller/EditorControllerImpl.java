@@ -5,9 +5,7 @@ import org.forerunnerintl.xlate.io.ProjectSettingsImpl;
 import org.forerunnerintl.xlate.io.XlateSettings;
 import org.forerunnerintl.xlate.note.PreferredTranslationFile;
 import org.forerunnerintl.xlate.note.TranslationEntry;
-import org.forerunnerintl.xlate.text.DocumentText;
-import org.forerunnerintl.xlate.text.SourceTextConverter;
-import org.forerunnerintl.xlate.text.TextFormat;
+import org.forerunnerintl.xlate.text.*;
 import org.forerunnerintl.xlate.text.osis.*;
 import org.forerunnerintl.xlate.ui.MainEditorPane;
 
@@ -18,12 +16,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class EditorControllerImpl implements EditorController {
     private static final String XML_SUFFIX = ".xml";
 
     final private MainEditorPane mainEditorPane;
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
     final private OsisReader osisReader = new OsisReader();
     final private OsisWriter osisWriter = new OsisWriter();
     final private PreferredTranslationFile preferredTranslationFile;
@@ -75,6 +78,15 @@ public class EditorControllerImpl implements EditorController {
     }
 
     @Override
+    public Future<TranslationEntry> getPreferredTranslation(final OsisDocument document, final String key) {
+        return executor.submit(() -> {
+            String refKey = TranslationEntry.buildKey(document, key);
+            TranslationEntry entry = preferredTranslationFile.get(refKey);
+            return entry;
+        });
+    }
+
+    @Override
     public void editDocument(OsisDocument document, EditWordCommand cmd) {
         switch (cmd.getCommandType()) {
             case AddNote:
@@ -85,9 +97,15 @@ public class EditorControllerImpl implements EditorController {
                 break;
 
             case InsertAfter:
+                insertNextTo(document, cmd, 1);
                 break;
 
             case InsertBefore:
+                insertNextTo(document, cmd, -1);
+                break;
+
+            case Move:
+                moveWord(document, cmd);
                 break;
         }
 
@@ -106,22 +124,88 @@ public class EditorControllerImpl implements EditorController {
         }
     }
 
+    private void insertNextTo(OsisDocument document, EditWordCommand cmd, int adjustment) {
+        OsisWord word = cmd.getWord();
+        OsisWord newWord = createAddendum(cmd.getText());
+        OsisVerse verse = getVerse(document, cmd.getVerseReference());
+        List<OsisWord> wordList = verse.getOsisWords();
+        int index = wordList.indexOf(word) + adjustment;
+        wordList.add(index, newWord);
+
+        storeDocument(document);
+        mainEditorPane.setOsisDocument(document);
+    }
+
+    private OsisWord createAddendum(String text) {
+        OsisWord result = new OsisWord();
+
+        result.setId(DocumentWord.ADDENDUM_ID);
+        result.setBodyText(text);
+
+        return result;
+    }
+
+    private void insertBefore(OsisDocument document, EditWordCommand cmd) {
+    }
+
+    private void moveWord(OsisDocument document, EditWordCommand cmd) {
+        OsisWord word = cmd.getWord();
+        OsisVerse verse = getVerse(document, cmd.getVerseReference());
+        List<OsisWord> wordList = verse.getOsisWords();
+        int index = wordList.indexOf(word);
+        wordList.remove(index);
+
+        if (cmd.getCount() > 0) {
+            index += cmd.getCount();
+        }
+        wordList.add(index, word);
+
+        storeDocument(document);
+        mainEditorPane.setOsisDocument(document);
+    }
+
+    private OsisVerse getVerse(OsisDocument document, VerseReference verseReference) {
+        OsisVerse result = null;
+
+        String chapterId = verseReference.toChapterId();
+        OsisChapter chapter = null;
+        for (OsisChapter oc : document.getOsisText().getOsisBook().getOsisChapters()) {
+            if (chapterId.equals(oc.getOsisId())) {
+                chapter = oc;
+                break;
+            }
+        }
+
+        if (chapter != null) {
+            String verseId = verseReference.toVerseId();
+            for (OsisVerse ov : chapter.getOsisVerses()) {
+                if (verseId.equals(ov.getUniqueId())) {
+                    result = ov;
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
+
     private boolean handlePreferredTranslation(OsisDocument document, EditWordCommand cmd) {
         boolean result = false;
         String refKey = cmd.getWord().getLemma();
         refKey = TranslationEntry.buildKey(document, refKey);
-        String newPreferred = cmd.getPrimaryDefinition();
+        String newPrimary = cmd.getPrimaryDefinition();
+        String newAlternate = cmd.getAltDefinition();
 
         TranslationEntry entry = preferredTranslationFile.get(refKey);
         if (entry == null) {
-            if (newPreferred != null && !newPreferred.equals("")) {
+            if (newPrimary != null && !newPrimary.equals("")) {
                 entry = new TranslationEntry(refKey, cmd.getPrimaryDefinition(), cmd.getAltDefinition());
                 preferredTranslationFile.store(entry);
                 result = true;
             }
-        } else if (!newPreferred.equals(entry.getPrimary())) {
-            if (newPreferred != null && !newPreferred.equals("")) {
-                entry.setPrimary(newPreferred);
+        } else if (!(newPrimary.equals(entry.getPrimary()) && newAlternate.equals(entry.getAlternatesAsString()))) {
+            if (newPrimary != null && !newPrimary.equals("")) {
+                entry.setPrimary(newPrimary);
                 entry.setAlternatesAsString(cmd.getAltDefinition());
                 preferredTranslationFile.store(entry);
                 result = true;
@@ -134,8 +218,7 @@ public class EditorControllerImpl implements EditorController {
     private void storeDocument(OsisDocument document) {
         String bookCode = document.getOsisText().getOsisBook().getOsisId();
         Path textPath = buildTextBath(bookCode);
-        OsisWriter writer = new OsisWriter();
-        writer.writePath(textPath, document);
+        osisWriter.writePath(textPath, document);
     }
 
     private void updateTranslations(OsisDocument document) {
