@@ -7,10 +7,7 @@ import org.forerunnerintl.xlate.controller.EditorController;
 import org.forerunnerintl.xlate.controller.EditorControllerWrapper;
 import org.forerunnerintl.xlate.io.ProjectSettingsImpl;
 import org.forerunnerintl.xlate.text.VerseReference;
-import org.forerunnerintl.xlate.text.osis.OsisChapter;
-import org.forerunnerintl.xlate.text.osis.OsisDocument;
-import org.forerunnerintl.xlate.text.osis.OsisVerse;
-import org.forerunnerintl.xlate.text.osis.OsisWord;
+import org.forerunnerintl.xlate.text.osis.*;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -435,9 +432,19 @@ public class MainEditorPane extends JPanel
     @Override
     public void mouseClicked(MouseEvent event) {
         int offset = editMainEditor.viewToModel2D(event.getPoint());
-        VerseReference verseReference = referenceByOffset.get(offset).value();
         OsisWord word = wordsByOffset.get(offset);
+        VerseReference verseReference = referenceByOffset.get(offset).value();
 
+        switch (event.getButton()) {
+            // left click
+            case MouseEvent.BUTTON1 -> showEditWordDialog(word, verseReference);
+
+            // right click
+            case MouseEvent.BUTTON3 -> showContextMenu(word, verseReference, event);
+        }
+    }
+
+    private void showEditWordDialog(OsisWord word, VerseReference verseReference) {
         EditWordCommand editWord = new EditWordCommand();
         editWord.setTranslationEntryFuture(editorController.getPreferredTranslation(document, word.getLemma()));
         editWord.setVerseReference(verseReference);
@@ -449,6 +456,23 @@ public class MainEditorPane extends JPanel
             if (cmd != null) {
                 editorController.editDocument(document, cmd);
             }
+        }
+    }
+
+
+    private void showContextMenu(OsisWord word, VerseReference verseReference, MouseEvent event) {
+        ContextMenu contextMenu = new ContextMenu(word, verseReference);
+        contextMenu.show(event.getComponent(), event.getX(), event.getY());
+    }
+
+    private void copyVerseClicked(VerseReference verseReference) {
+    }
+
+    private void noteMenuClicked(OsisWord word, VerseReference verseReference) {
+        OsisVerse verse = OsisHelper.getVerse(document, verseReference);
+        NoteEditor noteEditor = new NoteEditor(owner, verse, word);
+        if (noteEditor.isUpdated()) {
+            editorController.storeDocument(document);
         }
     }
 
@@ -489,6 +513,41 @@ public class MainEditorPane extends JPanel
             }
 
             return result;
+        }
+    }
+
+    private class ContextMenu extends JPopupMenu
+                                implements ActionListener {
+        public static final String MENU_COPY_VERSE = "CopyVerse";
+        public static final String MENU_NOTE = "Note";
+
+        private OsisWord word;
+        private VerseReference verseReference;
+
+        private JMenuItem copyVerse;
+        private JMenuItem note;
+
+        public ContextMenu(OsisWord word, VerseReference verseReference) {
+            this.word = word;
+            this.verseReference = verseReference;
+
+            note = new JMenuItem(MENU_NOTE);
+            note.setActionCommand(MENU_NOTE);
+            note.addActionListener(this);
+            add(note);
+
+            copyVerse = new JMenuItem(MENU_COPY_VERSE);
+            copyVerse.setActionCommand(MENU_COPY_VERSE);
+            copyVerse.addActionListener(this);
+            add(copyVerse);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent event) {
+            switch (event.getActionCommand()) {
+                case MENU_COPY_VERSE -> copyVerseClicked(verseReference);
+                case MENU_NOTE -> noteMenuClicked(word, verseReference);
+            }
         }
     }
 }

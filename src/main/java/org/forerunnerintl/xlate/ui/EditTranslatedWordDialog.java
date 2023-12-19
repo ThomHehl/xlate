@@ -19,14 +19,12 @@ import java.util.concurrent.ExecutionException;
 public class EditTranslatedWordDialog extends JDialog
                                         implements ActionListener, DocumentListener {
     private static final String     TEXT_ALT_DEFINITIONS = "Alternate Definitions";
-    private static final String     TEXT_CANCEL = "Cancel";
     private static final String     TEXT_COUNT = "Count";
     private static final String     TEXT_ECHO_DEFINITION = "Echo Definition";
     private static final String     TEXT_EDIT_TEXT = "Edit text";
     private static final String     TEXT_INSERT_AFTER = "Insert after";
     private static final String     TEXT_INSERT_BEFORE = "Insert before";
     private static final String     TEXT_MOVE = "Move";
-    private static final String     TEXT_OK = "OK";
     private static final String     TEXT_PRIMARY_DEFINITION = "Primary Definition";
     private static final String     TEXT_TEXT = "Text";
     private static final String     TITLE = "Edit word:";
@@ -123,7 +121,7 @@ public class EditTranslatedWordDialog extends JDialog
     }
 
     private void createRadioButtonGroup() {
-        JPanel radioPanel = new JPanel(new GridLayout(3, 1));
+        JPanel radioPanel = new JPanel(new GridLayout(4, 1));
 
         btnEditText = new JRadioButton(TEXT_EDIT_TEXT);
         btnEditText.setMnemonic(KeyEvent.VK_E);
@@ -210,17 +208,17 @@ public class EditTranslatedWordDialog extends JDialog
     private void createActionButtons() {
         JPanel buttonPanel = new JPanel(new GridLayout(1, 2));
 
-        btnCancel = new JButton(TEXT_CANCEL);
+        btnCancel = new JButton(UiConstants.TEXT_CANCEL);
         btnCancel.setMnemonic(KeyEvent.VK_L);
         btnCancel.setPreferredSize(UiConstants.BUTTON_SIZE);
-        btnCancel.setActionCommand(TEXT_CANCEL);
+        btnCancel.setActionCommand(UiConstants.TEXT_CANCEL);
         btnCancel.addActionListener(this);
         buttonPanel.add(btnCancel);
 
-        btnOk = new JButton(TEXT_OK);
+        btnOk = new JButton(UiConstants.TEXT_OK);
         btnOk.setMnemonic(KeyEvent.VK_O);
         btnOk.setPreferredSize(UiConstants.BUTTON_SIZE);
-        btnOk.setActionCommand(TEXT_OK);
+        btnOk.setActionCommand(UiConstants.TEXT_OK);
         btnOk.addActionListener(this);
         buttonPanel.add(btnOk);
 
@@ -230,7 +228,7 @@ public class EditTranslatedWordDialog extends JDialog
     @Override
     public void actionPerformed(ActionEvent event) {
         switch (event.getActionCommand()) {
-            case TEXT_CANCEL:
+            case UiConstants.TEXT_CANCEL:
                 cancelButtonClicked();
                 break;
 
@@ -253,7 +251,7 @@ public class EditTranslatedWordDialog extends JDialog
                 showCount(true);
                 break;
 
-            case TEXT_OK:
+            case UiConstants.TEXT_OK:
                 okButtonClicked();
                 break;
         }

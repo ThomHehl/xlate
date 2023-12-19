@@ -13,9 +13,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class OsisVerse extends DocumentVerse {
-    @JacksonXmlElementWrapper(useWrapping = false)
-    @JacksonXmlProperty(localName = "note")
-    private List<OsisNote> osisNotes;
     @JacksonXmlProperty(isAttribute = true, localName = "osisID")
     private String uniqueId;
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -24,6 +21,9 @@ public class OsisVerse extends DocumentVerse {
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "w")
     private List<OsisWord> osisWords;
+    @JacksonXmlElementWrapper(useWrapping = false)
+    @JacksonXmlProperty(localName = "note")
+    private List<OsisNote> osisNotes;
 
     @Override
     public void clear() {

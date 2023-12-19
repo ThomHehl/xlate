@@ -30,6 +30,11 @@ public class OsisWord extends DocumentWord {
     private String bodyText;
 
     @Override
+    public void clear() {
+        setNoteId(null);
+    }
+
+    @Override
     public String getBodyText() {
         return bodyText;
     }
@@ -114,6 +119,7 @@ public class OsisWord extends DocumentWord {
                 ", lemma='" + lemma + '\'' +
                 ", sourceWord='" + sourceWord + '\'' +
                 ", bodyText='" + bodyText + '\'' +
+                ", noteId='" + noteId + '\'' +
                 '}';
     }
 }

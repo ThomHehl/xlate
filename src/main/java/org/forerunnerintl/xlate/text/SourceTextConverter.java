@@ -54,6 +54,7 @@ public class SourceTextConverter {
     }
 
     private void convertWord(DocumentWord word) {
+        word.clear();
         String sourceWord = word.getBodyText();
         word.setSourceWord(sourceWord);
         word.setBodyText(DocumentWord.DEFAULT_BODY_TEXT);

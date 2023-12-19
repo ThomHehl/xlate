@@ -83,11 +83,29 @@ public class EditorControllerWrapper implements EditorController {
     }
 
     @Override
+    public void storeDocument(OsisDocument document) {
+        Thread startThread = new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                Thread.yield();
+                editorController.storeDocument(document);
+            }
+        };
+        startThread.start();
+    }
+
+    @Override
     public void createProject(File projectDir) {
         Thread startThread = new Thread() {
             @Override
             public void run() {
                 super.run();
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ie) {
+                    ie.printStackTrace();
+                }
                 editorController.createProject(projectDir);
             }
         };

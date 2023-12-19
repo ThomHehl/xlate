@@ -1,22 +1,38 @@
 package org.forerunnerintl.xlate.text.osis;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 import java.util.List;
 
 public class OsisWork {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JacksonXmlElementWrapper(useWrapping = false)
     private List<String> contributor;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String creator;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String date;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String description;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String identifier;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JacksonXmlProperty(isAttribute = true)
     private String lang;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JacksonXmlProperty(isAttribute = true)
     private String osisWork;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String publisher;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String refSystem;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String rights;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String source;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String title;
 
     public List<String> getContributor() {

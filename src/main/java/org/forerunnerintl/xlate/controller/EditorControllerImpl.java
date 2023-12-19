@@ -16,7 +16,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -120,20 +119,18 @@ public class EditorControllerImpl implements EditorController {
             updateTranslations(document);
         } else {
             storeDocument(document);
-            mainEditorPane.setOsisDocument(document);
         }
     }
 
     private void insertNextTo(OsisDocument document, EditWordCommand cmd, int adjustment) {
         OsisWord word = cmd.getWord();
         OsisWord newWord = createAddendum(cmd.getText());
-        OsisVerse verse = getVerse(document, cmd.getVerseReference());
+        OsisVerse verse = OsisHelper.getVerse(document, cmd.getVerseReference());
         List<OsisWord> wordList = verse.getOsisWords();
         int index = wordList.indexOf(word) + adjustment;
         wordList.add(index, newWord);
 
         storeDocument(document);
-        mainEditorPane.setOsisDocument(document);
     }
 
     private OsisWord createAddendum(String text) {
@@ -150,7 +147,7 @@ public class EditorControllerImpl implements EditorController {
 
     private void moveWord(OsisDocument document, EditWordCommand cmd) {
         OsisWord word = cmd.getWord();
-        OsisVerse verse = getVerse(document, cmd.getVerseReference());
+        OsisVerse verse = OsisHelper.getVerse(document, cmd.getVerseReference());
         List<OsisWord> wordList = verse.getOsisWords();
         int index = wordList.indexOf(word);
         wordList.remove(index);
@@ -161,32 +158,6 @@ public class EditorControllerImpl implements EditorController {
         wordList.add(index, word);
 
         storeDocument(document);
-        mainEditorPane.setOsisDocument(document);
-    }
-
-    private OsisVerse getVerse(OsisDocument document, VerseReference verseReference) {
-        OsisVerse result = null;
-
-        String chapterId = verseReference.toChapterId();
-        OsisChapter chapter = null;
-        for (OsisChapter oc : document.getOsisText().getOsisBook().getOsisChapters()) {
-            if (chapterId.equals(oc.getOsisId())) {
-                chapter = oc;
-                break;
-            }
-        }
-
-        if (chapter != null) {
-            String verseId = verseReference.toVerseId();
-            for (OsisVerse ov : chapter.getOsisVerses()) {
-                if (verseId.equals(ov.getUniqueId())) {
-                    result = ov;
-                    break;
-                }
-            }
-        }
-
-        return result;
     }
 
     private boolean handlePreferredTranslation(OsisDocument document, EditWordCommand cmd) {
@@ -215,10 +186,12 @@ public class EditorControllerImpl implements EditorController {
         return result;
     }
 
-    private void storeDocument(OsisDocument document) {
+    @Override
+    public void storeDocument(OsisDocument document) {
         String bookCode = document.getOsisText().getOsisBook().getOsisId();
         Path textPath = buildTextBath(bookCode);
         osisWriter.writePath(textPath, document);
+        mainEditorPane.setOsisDocument(document);
     }
 
     private void updateTranslations(OsisDocument document) {

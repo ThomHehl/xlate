@@ -19,4 +19,6 @@ public interface EditorController {
     Future<TranslationEntry> getPreferredTranslation(OsisDocument document, String key);
 
     void editDocument(OsisDocument document, EditWordCommand cmd);
+
+    void storeDocument(OsisDocument document);
 }

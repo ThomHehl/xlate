@@ -1,6 +1,8 @@
 package org.forerunnerintl.xlate.text;
 
 public abstract class DocumentNote {
+    public static final String NOTE_SEPARATOR = "note ";
+    public static final String REFERENCE_SEPARATOR = "!";
 
     public abstract String getNoteId();
 
@@ -10,7 +12,7 @@ public abstract class DocumentNote {
 
     public abstract void setText(String text);
 
-    public abstract String getType();
+    public abstract DocumentNoteType getType();
 
-    public abstract void setType(String type);
+    public abstract void setType(DocumentNoteType type);
 }

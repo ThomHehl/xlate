@@ -1,18 +1,44 @@
 package org.forerunnerintl.xlate.text.osis;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 import org.forerunnerintl.xlate.text.DocumentNote;
+import org.forerunnerintl.xlate.text.DocumentNoteType;
 
 public class OsisNote extends DocumentNote {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String catchWord;
-    @JacksonXmlProperty(localName = "n")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JacksonXmlProperty(isAttribute = true, localName = "n")
     private String noteId;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JacksonXmlProperty(isAttribute = true, localName = "osisID")
+    private String osisId;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JacksonXmlProperty(isAttribute = true)
+    private String osisRef;
     @JacksonXmlText
     private String text;
-    private String type;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JacksonXmlProperty(isAttribute = true)
+    private DocumentNoteType type;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JacksonXmlProperty(localName = "rdg")
     private OsisReading reading;
+
+    @Override
+    public String toString() {
+        return "OsisNote{" +
+                "catchWord='" + catchWord + '\'' +
+                ", noteId='" + noteId + '\'' +
+                ", osisId='" + osisId + '\'' +
+                ", osisRef='" + osisRef + '\'' +
+                ", text='" + text + '\'' +
+                ", type=" + type +
+                ", reading=" + reading +
+                '}';
+    }
 
     public OsisNote() { }
 
@@ -38,6 +64,22 @@ public class OsisNote extends DocumentNote {
         this.noteId = noteId;
     }
 
+    public String getOsisId() {
+        return osisId;
+    }
+
+    public void setOsisId(String osisId) {
+        this.osisId = osisId;
+    }
+
+    public String getOsisRef() {
+        return osisRef;
+    }
+
+    public void setOsisRef(String osisRef) {
+        this.osisRef = osisRef;
+    }
+
     public OsisReading getReading() {
         return reading;
     }
@@ -57,12 +99,12 @@ public class OsisNote extends DocumentNote {
     }
 
     @Override
-    public String getType() {
+    public DocumentNoteType getType() {
         return type;
     }
 
     @Override
-    public void setType(String type) {
+    public void setType(DocumentNoteType type) {
         this.type = type;
     }
 }

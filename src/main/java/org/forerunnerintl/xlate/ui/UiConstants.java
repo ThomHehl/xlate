@@ -21,4 +21,5 @@ public class UiConstants {
 
     public static final String      TEXT_CANCEL = "Cancel";
     public static final String      TEXT_CREATE = "Create";
+    public static final String      TEXT_OK = "OK";
 }

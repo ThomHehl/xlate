@@ -4,6 +4,8 @@ public abstract class DocumentWord {
     public static final String ADDENDUM_ID = "addendum";
     public static final String DEFAULT_BODY_TEXT = "(...)";
 
+    public abstract void clear();
+
     public abstract String getBodyText();
 
     public abstract void setBodyText(String bodyText);
