@@ -159,6 +159,8 @@ public class NoteEditor extends JDialog
         add(textFieldPanel);
 
         txtNoteText = new JTextArea();
+        txtNoteText.setLineWrap(true);
+        txtNoteText.setWrapStyleWord(true);
         add(txtNoteText);
     }
 
@@ -237,6 +239,7 @@ public class NoteEditor extends JDialog
                 if (text == null) {
                     text = "";
                 }
+                text = text.trim();
                 if (!text.equals(txtNoteText.getText())){
                     note.setText(text);
                     updated = true;
@@ -245,6 +248,16 @@ public class NoteEditor extends JDialog
         } else {
             DocumentNoteType noteType = (DocumentNoteType) cmbNoteType.getSelectedItem();
             OsisNote note = OsisHelper.getNote(verse, noteType);
+            if (note == null) {
+                note = buildNote();
+                verse.getOsisNotes().add(note);
+                updated = true;
+            } else {
+                String text = note.getText();
+                text = text.trim();
+                note.setText(text);
+                updated = true;
+            }
         }
     }
 
@@ -254,7 +267,14 @@ public class NoteEditor extends JDialog
         result.setType((DocumentNoteType) cmbNoteType.getSelectedItem());
         result.setOsisRef(verse.getUniqueId());
         result.setOsisId(buildOsisId());
-        result.setText(txtNoteText.getText());
+
+        String text = txtNoteText.getText();
+        if (text == null) {
+            text = "";
+        }
+        text = text.trim();
+        result.setText(text);
+
         if (radNoteForWord.isSelected()) {
             result.setNoteId(txtNoteId.getText());
         }
@@ -288,7 +308,11 @@ public class NoteEditor extends JDialog
             OsisNote note;
             if (radNoteForWord.isSelected()) {
                 String noteId = txtNoteId.getText();
-                note = OsisHelper.getNote(verse, noteId);
+                if (noteId != null) {
+                    note = OsisHelper.getNote(verse, noteId);
+                } else {
+                    note = null;
+                }
             } else {
                 note = OsisHelper.getNote(verse, noteType);
             }

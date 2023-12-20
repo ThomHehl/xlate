@@ -4,6 +4,8 @@ import org.forerunnerintl.xlate.text.DocumentNoteType;
 import org.forerunnerintl.xlate.text.VerseReference;
 
 public class OsisHelper {
+    public static final String      QUOTE_SEPARATOR = " -- ";
+
     public static OsisVerse getVerse(OsisDocument document, VerseReference verseReference) {
         OsisVerse result = null;
 
@@ -43,7 +45,8 @@ public class OsisHelper {
         OsisNote result = null;
 
         for (OsisNote osisNote : verse.getOsisNotes()) {
-            if (osisNote.getNoteId().equals(noteId)) {
+            String nid = osisNote.getNoteId();
+            if (nid != null && nid.equals(noteId)) {
                 result = osisNote;
                 break;
             }
@@ -64,6 +67,22 @@ public class OsisHelper {
             }
         }
 
+        return result;
+    }
+
+    public static String getVerseText(OsisDocument document, VerseReference verseReference) {
+        OsisVerse verse = getVerse(document, verseReference);
+        StringBuilder sb = new StringBuilder();
+
+        for (OsisWord word : verse.getOsisWords()) {
+            sb.append(word.getBodyText());
+            sb.append(' ');
+        }
+
+        sb.append(QUOTE_SEPARATOR);
+        sb.append(verseReference);
+
+        String result = sb.toString().trim();
         return result;
     }
 }

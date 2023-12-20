@@ -14,10 +14,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 public class EditTranslatedWordDialog extends JDialog
                                         implements ActionListener, DocumentListener {
+    private static final String     NON_ECHO_CHARACTERS = ".Z";
     private static final String     TEXT_ALT_DEFINITIONS = "Alternate Definitions";
     private static final String     TEXT_COUNT = "Count";
     private static final String     TEXT_ECHO_DEFINITION = "Echo Definition";
@@ -64,9 +66,11 @@ public class EditTranslatedWordDialog extends JDialog
         createActionButtons();
 
         setTranslationEntry(editWordCommand);
-        this.txtText.setText(this.word.getBodyText());
-        this.txtPrimaryDefinition.setText(this.primaryDefinition);
-        this.txtAltDefinitions.setText(this.altDefinition);
+        txtText.setText(this.word.getBodyText());
+        txtText.requestFocus();
+        txtText.selectAll();
+        txtPrimaryDefinition.setText(this.primaryDefinition);
+        txtAltDefinitions.setText(this.altDefinition);
 
         setSize(UiConstants.DIALOG_SIZE);
         setVisible(true);
@@ -241,6 +245,7 @@ public class EditTranslatedWordDialog extends JDialog
             case TEXT_INSERT_AFTER:
             case TEXT_INSERT_BEFORE:
                 showText(true);
+                clearText();
                 showDefinitions(false);
                 showCount(false);
                 break;
@@ -263,6 +268,12 @@ public class EditTranslatedWordDialog extends JDialog
     }
 
     private void echoDefinition() {
+        StringBuilder sb = new StringBuilder();
+        for (char ch : txtText.getText().toCharArray()) {
+            if (!(NON_ECHO_CHARACTERS.indexOf(ch) >= 0)) {
+                sb.append(ch);
+            }
+        }
         txtPrimaryDefinition.setText(txtText.getText());
     }
 
@@ -317,6 +328,12 @@ public class EditTranslatedWordDialog extends JDialog
 
         lblPrimaryDefinition.setVisible(showing);
         txtPrimaryDefinition.setVisible(showing);
+    }
+
+    private void clearText() {
+        txtText.setText("");
+        txtText.requestFocus();
+        txtText.selectAll();
     }
 
     private void showText(boolean showing) {

@@ -16,6 +16,12 @@ public class EditWordCommand {
     private VerseReference verseReference;
     private OsisWord word;
 
+    public EditWordCommand() {}
+
+    public EditWordCommand(CommandType commandType) {
+        this.commandType = commandType;
+    }
+
     @Override
     public String toString() {
         return "EditWordCommand{" +

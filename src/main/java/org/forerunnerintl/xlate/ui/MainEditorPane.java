@@ -12,6 +12,8 @@ import org.forerunnerintl.xlate.text.osis.*;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -466,6 +468,28 @@ public class MainEditorPane extends JPanel
     }
 
     private void copyVerseClicked(VerseReference verseReference) {
+        String verseText = OsisHelper.getVerseText(document, verseReference);
+        StringSelection stringSelection = new StringSelection(verseText);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(stringSelection, stringSelection);
+    }
+
+    private void moveRightClicked(OsisWord word, VerseReference verseReference) {
+        moveCount(word, verseReference, 1);
+    }
+
+    private void moveLeftClicked(OsisWord word, VerseReference verseReference) {
+        moveCount(word, verseReference, -1);
+    }
+
+    private void moveCount(OsisWord word, VerseReference verseReference, int count) {
+        EditWordCommand cmd = new EditWordCommand(EditWordCommand.CommandType.Move);
+        cmd.setVerseReference(verseReference);
+        cmd.setWord(word);
+        cmd.setCount(count);
+
+        editorController.editDocument(document, cmd);
+
     }
 
     private void noteMenuClicked(OsisWord word, VerseReference verseReference) {
@@ -518,13 +542,17 @@ public class MainEditorPane extends JPanel
 
     private class ContextMenu extends JPopupMenu
                                 implements ActionListener {
-        public static final String MENU_COPY_VERSE = "CopyVerse";
+        public static final String MENU_COPY_VERSE = "Copy Verse";
+        public static final String MENU_MOVE_LEFT = "Move Left";
+        public static final String MENU_MOVE_RIGHT = "Move Right";
         public static final String MENU_NOTE = "Note";
 
         private OsisWord word;
         private VerseReference verseReference;
 
         private JMenuItem copyVerse;
+        private JMenuItem moveLeft;
+        private JMenuItem moveRight;
         private JMenuItem note;
 
         public ContextMenu(OsisWord word, VerseReference verseReference) {
@@ -540,12 +568,24 @@ public class MainEditorPane extends JPanel
             copyVerse.setActionCommand(MENU_COPY_VERSE);
             copyVerse.addActionListener(this);
             add(copyVerse);
+
+            moveLeft = new JMenuItem(MENU_MOVE_LEFT);
+            moveLeft.setActionCommand(MENU_MOVE_LEFT);
+            moveLeft.addActionListener(this);
+            add(moveLeft);
+
+            moveRight = new JMenuItem(MENU_MOVE_RIGHT);
+            moveRight.setActionCommand(MENU_MOVE_RIGHT);
+            moveRight.addActionListener(this);
+            add(moveRight);
         }
 
         @Override
         public void actionPerformed(ActionEvent event) {
             switch (event.getActionCommand()) {
                 case MENU_COPY_VERSE -> copyVerseClicked(verseReference);
+                case MENU_MOVE_LEFT -> moveLeftClicked(word, verseReference);
+                case MENU_MOVE_RIGHT -> moveRightClicked(word, verseReference);
                 case MENU_NOTE -> noteMenuClicked(word, verseReference);
             }
         }

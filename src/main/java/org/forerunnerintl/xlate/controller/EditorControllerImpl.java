@@ -100,7 +100,7 @@ public class EditorControllerImpl implements EditorController {
                 break;
 
             case InsertBefore:
-                insertNextTo(document, cmd, -1);
+                insertNextTo(document, cmd, 0);
                 break;
 
             case Move:
@@ -152,9 +152,7 @@ public class EditorControllerImpl implements EditorController {
         int index = wordList.indexOf(word);
         wordList.remove(index);
 
-        if (cmd.getCount() > 0) {
-            index += cmd.getCount();
-        }
+        index += cmd.getCount();
         wordList.add(index, word);
 
         storeDocument(document);
