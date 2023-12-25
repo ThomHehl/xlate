@@ -240,8 +240,9 @@ public class NoteEditor extends JDialog
                     text = "";
                 }
                 text = text.trim();
-                if (!text.equals(txtNoteText.getText())){
-                    note.setText(text);
+                String newText = txtNoteText.getText().trim();
+                if (!text.equals(newText)){
+                    note.setText(newText);
                     updated = true;
                 }
             }
@@ -253,8 +254,7 @@ public class NoteEditor extends JDialog
                 verse.getOsisNotes().add(note);
                 updated = true;
             } else {
-                String text = note.getText();
-                text = text.trim();
+                String text = noteText.trim();
                 note.setText(text);
                 updated = true;
             }

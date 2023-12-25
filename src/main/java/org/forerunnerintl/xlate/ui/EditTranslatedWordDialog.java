@@ -8,25 +8,19 @@ import org.forerunnerintl.xlate.text.osis.OsisWord;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.NumberFormatter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.text.NumberFormat;
-import java.util.Arrays;
+import java.awt.event.*;
 import java.util.concurrent.ExecutionException;
 
 public class EditTranslatedWordDialog extends JDialog
-                                        implements ActionListener, DocumentListener {
-    private static final String     NON_ECHO_CHARACTERS = ".Z";
+        implements ActionListener, DocumentListener, FocusListener {
+    private static final String     NON_ECHO_CHARACTERS = ".,:;";
     private static final String     TEXT_ALT_DEFINITIONS = "Alternate Definitions";
     private static final String     TEXT_COUNT = "Count";
     private static final String     TEXT_ECHO_DEFINITION = "Echo Definition";
     private static final String     TEXT_EDIT_TEXT = "Edit text";
     private static final String     TEXT_INSERT_AFTER = "Insert after";
     private static final String     TEXT_INSERT_BEFORE = "Insert before";
-    private static final String     TEXT_MOVE = "Move";
     private static final String     TEXT_PRIMARY_DEFINITION = "Primary Definition";
     private static final String     TEXT_TEXT = "Text";
     private static final String     TITLE = "Edit word:";
@@ -36,11 +30,8 @@ public class EditTranslatedWordDialog extends JDialog
     private JRadioButton btnEditText;
     private JRadioButton btnInsertBefore;
     private JRadioButton btnInsertAfter;
-    private JRadioButton btnMove;
     private JLabel lblAltDefinitions;
     private JTextField txtAltDefinitions;
-    private JLabel lblCount;
-    private JFormattedTextField txtCount;
     private JLabel lblPrimaryDefinition;
     private JTextField txtPrimaryDefinition;
     private JLabel lblText;
@@ -49,7 +40,7 @@ public class EditTranslatedWordDialog extends JDialog
     private EditWordCommand editWordCommand;
     private String altDefinition;
     private String primaryDefinition;
-    private boolean definitionProvided;
+    private boolean echoingDefintion;
     private VerseReference verseReference;
     private OsisWord word;
 
@@ -61,11 +52,11 @@ public class EditTranslatedWordDialog extends JDialog
         setLocations(owner);
 
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+        setTranslationEntry(editWordCommand);
         createRadioButtonGroup();
         createTextControls();
         createActionButtons();
 
-        setTranslationEntry(editWordCommand);
         txtText.setText(this.word.getBodyText());
         txtText.requestFocus();
         txtText.selectAll();
@@ -87,15 +78,18 @@ public class EditTranslatedWordDialog extends JDialog
         }
 
         if (translationEntry == null) {
-            this.primaryDefinition = "";
-            this.altDefinition = "";
+            primaryDefinition = "";
+            altDefinition = "";
+            echoingDefintion = true;
         } else {
             String primary = translationEntry.getPrimary();
             if (primary == null) {
-                this.primaryDefinition = "";
+                primaryDefinition = "";
+                echoingDefintion = true;
             } else {
-                this.primaryDefinition = primary;
-                definitionProvided = true;
+                primaryDefinition = primary;
+                String bodyText = editWordCommand.getWord().getBodyText();
+                echoingDefintion = primary.equals(bodyText);
             }
 
             String alt = translationEntry.getAlternatesAsString();
@@ -143,23 +137,16 @@ public class EditTranslatedWordDialog extends JDialog
         btnInsertAfter.setActionCommand(TEXT_INSERT_AFTER);
         radioPanel.add(btnInsertAfter);
 
-        btnMove = new JRadioButton(TEXT_MOVE);
-        btnMove.setMnemonic(KeyEvent.VK_M);
-        btnMove.setActionCommand(TEXT_MOVE);
-        radioPanel.add(btnMove);
-
         //Group the radio buttons.
         ButtonGroup group = new ButtonGroup();
         group.add(btnEditText);
         group.add(btnInsertBefore);
         group.add(btnInsertAfter);
-        group.add(btnMove);
 
         //Register a listener for the radio buttons.
         btnEditText.addActionListener(this);
         btnInsertBefore.addActionListener(this);
         btnInsertAfter.addActionListener(this);
-        btnMove.addActionListener(this);
 
         add(radioPanel);
     }
@@ -171,7 +158,8 @@ public class EditTranslatedWordDialog extends JDialog
         textControlsPanel.add(lblText);
 
         txtText = new JTextField();
-        if (!definitionProvided) {
+        txtText.addFocusListener(this);
+        if (echoingDefintion) {
             txtText.setActionCommand(TEXT_ECHO_DEFINITION);
             txtText.getDocument().addDocumentListener(this);
         }
@@ -189,24 +177,10 @@ public class EditTranslatedWordDialog extends JDialog
         txtAltDefinitions = new JTextField();
         textControlsPanel.add(txtAltDefinitions);
 
-        lblCount = new JLabel(TEXT_COUNT);
-        textControlsPanel.add(lblCount);
-
-        NumberFormat format = NumberFormat.getInstance();
-        NumberFormatter formatter = new NumberFormatter(format);
-        formatter.setValueClass(Integer.class);
-        formatter.setMinimum(-10);
-        formatter.setMaximum(10);
-        formatter.setAllowsInvalid(false);
-        formatter.setCommitsOnValidEdit(true);
-        txtCount = new JFormattedTextField(formatter);
-        textControlsPanel.add(txtCount);
-
         add(textControlsPanel);
 
         showText(true);
         showDefinitions(true);
-        showCount(false);
     }
 
     private void createActionButtons() {
@@ -239,7 +213,6 @@ public class EditTranslatedWordDialog extends JDialog
             case TEXT_EDIT_TEXT:
                 showText(true);
                 showDefinitions(true);
-                showCount(false);
                 break;
 
             case TEXT_INSERT_AFTER:
@@ -247,13 +220,6 @@ public class EditTranslatedWordDialog extends JDialog
                 showText(true);
                 clearText();
                 showDefinitions(false);
-                showCount(false);
-                break;
-
-            case TEXT_MOVE:
-                showText(false);
-                showDefinitions(false);
-                showCount(true);
                 break;
 
             case UiConstants.TEXT_OK:
@@ -270,11 +236,12 @@ public class EditTranslatedWordDialog extends JDialog
     private void echoDefinition() {
         StringBuilder sb = new StringBuilder();
         for (char ch : txtText.getText().toCharArray()) {
-            if (!(NON_ECHO_CHARACTERS.indexOf(ch) >= 0)) {
+            int pos = NON_ECHO_CHARACTERS.indexOf(ch);
+            if (pos < 0) {
                 sb.append(ch);
             }
         }
-        txtPrimaryDefinition.setText(txtText.getText());
+        txtPrimaryDefinition.setText(sb.toString());
     }
 
     private void okButtonClicked() {
@@ -293,11 +260,6 @@ public class EditTranslatedWordDialog extends JDialog
             case InsertBefore:
                 editWordCommand.setText(txtText.getText());
                 break;
-
-            case Move:
-                int count = (Integer)txtCount.getValue();
-                editWordCommand.setCount(count);
-                break;
         }
 
         setVisible(false);
@@ -310,16 +272,9 @@ public class EditTranslatedWordDialog extends JDialog
             result = EditWordCommand.CommandType.InsertAfter;
         } else if (btnInsertBefore.isSelected()) {
             result = EditWordCommand.CommandType.InsertBefore;
-        } else if (btnMove.isSelected()) {
-            result = EditWordCommand.CommandType.Move;
         }
 
         return result;
-    }
-
-    private void showCount(boolean showing) {
-        lblCount.setVisible(showing);
-        txtCount.setVisible(showing);
     }
 
     private void showDefinitions(boolean showing) {
@@ -358,5 +313,16 @@ public class EditTranslatedWordDialog extends JDialog
     @Override
     public void changedUpdate(DocumentEvent e) {
         echoDefinition();
+    }
+
+    @Override
+    public void focusGained(FocusEvent event) {
+        JTextField textfield = (JTextField) event.getComponent();
+        textfield.selectAll();
+    }
+
+    @Override
+    public void focusLost(FocusEvent e) {
+
     }
 }
