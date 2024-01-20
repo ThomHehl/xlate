@@ -5,7 +5,10 @@ import org.forerunnerintl.xlate.io.ProjectSettingsImpl;
 import org.forerunnerintl.xlate.io.XlateSettings;
 import org.forerunnerintl.xlate.note.PreferredTranslationFile;
 import org.forerunnerintl.xlate.note.TranslationEntry;
-import org.forerunnerintl.xlate.text.*;
+import org.forerunnerintl.xlate.text.DocumentText;
+import org.forerunnerintl.xlate.text.DocumentWord;
+import org.forerunnerintl.xlate.text.SourceTextConverter;
+import org.forerunnerintl.xlate.text.TextFormat;
 import org.forerunnerintl.xlate.text.osis.*;
 import org.forerunnerintl.xlate.ui.MainEditorPane;
 
@@ -25,7 +28,7 @@ public class EditorControllerImpl implements EditorController {
     private static final String XML_SUFFIX = ".xml";
 
     final private MainEditorPane mainEditorPane;
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     final private OsisReader osisReader = new OsisReader();
     final private OsisWriter osisWriter = new OsisWriter();
     final private PreferredTranslationFile preferredTranslationFile;
@@ -142,9 +145,6 @@ public class EditorControllerImpl implements EditorController {
         return result;
     }
 
-    private void insertBefore(OsisDocument document, EditWordCommand cmd) {
-    }
-
     private void moveWord(OsisDocument document, EditWordCommand cmd) {
         OsisWord word = cmd.getWord();
         OsisVerse verse = OsisHelper.getVerse(document, cmd.getVerseReference());
@@ -167,13 +167,13 @@ public class EditorControllerImpl implements EditorController {
 
         TranslationEntry entry = preferredTranslationFile.get(refKey);
         if (entry == null) {
-            if (newPrimary != null && !newPrimary.equals("")) {
+            if (newPrimary != null && !newPrimary.isEmpty()) {
                 entry = new TranslationEntry(refKey, cmd.getPrimaryDefinition(), cmd.getAltDefinition());
                 preferredTranslationFile.store(entry);
                 result = true;
             }
         } else if (!(newPrimary.equals(entry.getPrimary()) && newAlternate.equals(entry.getAlternatesAsString()))) {
-            if (newPrimary != null && !newPrimary.equals("")) {
+            if (newPrimary != null && !newPrimary.isEmpty()) {
                 entry.setPrimary(newPrimary);
                 entry.setAlternatesAsString(cmd.getAltDefinition());
                 preferredTranslationFile.store(entry);
@@ -247,18 +247,20 @@ public class EditorControllerImpl implements EditorController {
             result = false;
         }
 
-        Path textDirectory = projectSettings.getTextDirectory();
-        if (!textDirectory.toFile().exists()) {
-            textDirectory.toFile().mkdirs();
-        }
+        if (result) {
+            Path textDirectory = projectSettings.getTextDirectory();
+            if (!textDirectory.toFile().exists()) {
+                textDirectory.toFile().mkdirs();
+            }
 
-        result = convertFiles(projectSettings.getOldTestamentSourceFormat(), otSource, textDirectory);
+            result = convertFiles(projectSettings.getOldTestamentSourceFormat(), otSource, textDirectory);
+        }
 
         return result;
     }
 
     private boolean convertFiles(TextFormat textFormat, Path sourcePath, Path destPath) {
-        boolean result = false;
+        boolean result;
 
         SourceTextConverter converter = SourceTextConverter.getConverter(textFormat, TextFormat.OSIS);
 

@@ -13,10 +13,9 @@ import java.awt.event.*;
 import java.util.concurrent.ExecutionException;
 
 public class EditTranslatedWordDialog extends JDialog
-        implements ActionListener, DocumentListener, FocusListener {
+        implements ActionListener, DocumentListener, FocusListener, KeyListener {
     private static final String     NON_ECHO_CHARACTERS = ".,:;";
     private static final String     TEXT_ALT_DEFINITIONS = "Alternate Definitions";
-    private static final String     TEXT_COUNT = "Count";
     private static final String     TEXT_ECHO_DEFINITION = "Echo Definition";
     private static final String     TEXT_EDIT_TEXT = "Edit text";
     private static final String     TEXT_INSERT_AFTER = "Insert after";
@@ -32,6 +31,8 @@ public class EditTranslatedWordDialog extends JDialog
     private JRadioButton btnInsertAfter;
     private JLabel lblAltDefinitions;
     private JTextField txtAltDefinitions;
+    private JLabel lblEchoDefinition;
+    private JCheckBox chkEchoDefinition;
     private JLabel lblPrimaryDefinition;
     private JTextField txtPrimaryDefinition;
     private JLabel lblText;
@@ -40,7 +41,6 @@ public class EditTranslatedWordDialog extends JDialog
     private EditWordCommand editWordCommand;
     private String altDefinition;
     private String primaryDefinition;
-    private boolean echoingDefintion;
     private VerseReference verseReference;
     private OsisWord word;
 
@@ -58,13 +58,23 @@ public class EditTranslatedWordDialog extends JDialog
         createActionButtons();
 
         txtText.setText(this.word.getBodyText());
-        txtText.requestFocus();
         txtText.selectAll();
         txtPrimaryDefinition.setText(this.primaryDefinition);
         txtAltDefinitions.setText(this.altDefinition);
 
         setSize(UiConstants.DIALOG_SIZE);
+        txtText.requestFocus();
+        setInitialEchoCheckbox();
+        addKeyListener(this);
+
         setVisible(true);
+    }
+
+    private void setInitialEchoCheckbox() {
+        String primary = txtPrimaryDefinition.getText();
+        String text = txtText.getText();
+        boolean checked = primary.isEmpty() || primary.equals(text);
+        chkEchoDefinition.setSelected(checked);
     }
 
     private void setTranslationEntry(EditWordCommand editWordCommand) {
@@ -80,16 +90,13 @@ public class EditTranslatedWordDialog extends JDialog
         if (translationEntry == null) {
             primaryDefinition = "";
             altDefinition = "";
-            echoingDefintion = true;
         } else {
             String primary = translationEntry.getPrimary();
             if (primary == null) {
                 primaryDefinition = "";
-                echoingDefintion = true;
             } else {
                 primaryDefinition = primary;
                 String bodyText = editWordCommand.getWord().getBodyText();
-                echoingDefintion = primary.equals(bodyText);
             }
 
             String alt = translationEntry.getAlternatesAsString();
@@ -152,29 +159,40 @@ public class EditTranslatedWordDialog extends JDialog
     }
 
     private void createTextControls() {
-        JPanel textControlsPanel = new JPanel(new GridLayout(4, 2));
+        JPanel textControlsPanel = new JPanel(new GridLayout(5, 2));
 
         lblText = new JLabel(TEXT_TEXT);
         textControlsPanel.add(lblText);
 
         txtText = new JTextField();
         txtText.addFocusListener(this);
-        if (echoingDefintion) {
-            txtText.setActionCommand(TEXT_ECHO_DEFINITION);
-            txtText.getDocument().addDocumentListener(this);
-        }
+        txtText.addKeyListener(this);
+        txtText.getDocument().addDocumentListener(this);
         textControlsPanel.add(txtText);
+
+        lblEchoDefinition = new JLabel("");
+        textControlsPanel.add(lblEchoDefinition);
+
+        chkEchoDefinition = new JCheckBox(TEXT_ECHO_DEFINITION);
+        chkEchoDefinition.setMnemonic(KeyEvent.VK_E);
+        chkEchoDefinition.setActionCommand(TEXT_ECHO_DEFINITION);
+        chkEchoDefinition.addActionListener(this);
+        textControlsPanel.add(chkEchoDefinition);
 
         lblPrimaryDefinition = new JLabel(TEXT_PRIMARY_DEFINITION);
         textControlsPanel.add(lblPrimaryDefinition);
 
         txtPrimaryDefinition = new JTextField();
+        txtPrimaryDefinition.addFocusListener(this);
+        txtPrimaryDefinition.addKeyListener(this);
         textControlsPanel.add(txtPrimaryDefinition);
 
         lblAltDefinitions = new JLabel(TEXT_ALT_DEFINITIONS);
         textControlsPanel.add(lblAltDefinitions);
 
         txtAltDefinitions = new JTextField();
+        txtAltDefinitions.addFocusListener(this);
+        txtAltDefinitions.addKeyListener(this);
         textControlsPanel.add(txtAltDefinitions);
 
         add(textControlsPanel);
@@ -222,6 +240,10 @@ public class EditTranslatedWordDialog extends JDialog
                 showDefinitions(false);
                 break;
 
+            case TEXT_ECHO_DEFINITION:
+                txtText.requestFocus();
+                break;
+
             case UiConstants.TEXT_OK:
                 okButtonClicked();
                 break;
@@ -234,14 +256,16 @@ public class EditTranslatedWordDialog extends JDialog
     }
 
     private void echoDefinition() {
-        StringBuilder sb = new StringBuilder();
-        for (char ch : txtText.getText().toCharArray()) {
-            int pos = NON_ECHO_CHARACTERS.indexOf(ch);
-            if (pos < 0) {
-                sb.append(ch);
+        if (chkEchoDefinition.isSelected()) {
+            StringBuilder sb = new StringBuilder();
+            for (char ch : txtText.getText().toCharArray()) {
+                int pos = NON_ECHO_CHARACTERS.indexOf(ch);
+                if (pos < 0) {
+                    sb.append(ch);
+                }
             }
+            txtPrimaryDefinition.setText(sb.toString());
         }
-        txtPrimaryDefinition.setText(sb.toString());
     }
 
     private void okButtonClicked() {
@@ -278,6 +302,9 @@ public class EditTranslatedWordDialog extends JDialog
     }
 
     private void showDefinitions(boolean showing) {
+        lblEchoDefinition.setVisible(showing);
+        chkEchoDefinition.setVisible(showing);
+
         lblAltDefinitions.setVisible(showing);
         txtAltDefinitions.setVisible(showing);
 
@@ -322,7 +349,21 @@ public class EditTranslatedWordDialog extends JDialog
     }
 
     @Override
-    public void focusLost(FocusEvent e) {
+    public void focusLost(FocusEvent e) {}
 
+    @Override
+    public void keyTyped(KeyEvent event) {}
+
+    @Override
+    public void keyPressed(KeyEvent event) {
+        int keyCode = event.getKeyCode();
+        if (keyCode == KeyEvent.VK_ESCAPE) {
+            cancelButtonClicked();
+        } else if (keyCode == KeyEvent.VK_ENTER) {
+            okButtonClicked();
+        }
     }
+
+    @Override
+    public void keyReleased(KeyEvent e) {}
 }

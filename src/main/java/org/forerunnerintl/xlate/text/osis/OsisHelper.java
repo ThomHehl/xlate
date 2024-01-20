@@ -8,6 +8,11 @@ public class OsisHelper {
     public static final String      QUOTE_SEPARATOR = " -- ";
     public static final String      VAR_NOTE_REF = "$noteReference$";
 
+    public static OsisBook getOsisBook(OsisDocument document) {
+        OsisBook result = document.getOsisText().getOsisBook();
+        return result;
+    }
+
     public static OsisVerse getVerse(OsisDocument document, VerseReference verseReference) {
         OsisVerse result = null;
 
@@ -113,5 +118,15 @@ public class OsisHelper {
 
         String result = sb.toString().trim();
         return  result;
+    }
+
+    public static String getBookName(OsisDocument document) {
+        OsisBook book = getOsisBook(document);
+        return book.getTitle();
+    }
+
+    public static void setBookName(OsisDocument document, String name) {
+        OsisBook book = getOsisBook(document);
+        book.setTitle(name);
     }
 }

@@ -1,6 +1,7 @@
 package org.forerunnerintl.xlate.text.osis;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import org.forerunnerintl.xlate.text.DocumentBook;
@@ -10,6 +11,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class OsisBook extends DocumentBook {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String title;
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "chapter")
     private List<OsisChapter> osisChapters;
@@ -29,6 +32,7 @@ public class OsisBook extends DocumentBook {
     @JsonIgnore
     @Override
     public List<DocumentChapter> getChapters() {
+        @SuppressWarnings("unchecked")
         List<DocumentChapter> result = Collections.unmodifiableList((List) getOsisChapters());
         return result;
     }
@@ -36,6 +40,7 @@ public class OsisBook extends DocumentBook {
     @JsonIgnore
     @Override
     public void setChapters(List<DocumentChapter> chapters) {
+        @SuppressWarnings("unchecked")
         List<OsisChapter> chapterList = Collections.unmodifiableList((List) chapters);
         setOsisChapters(chapterList);
     }
@@ -54,6 +59,16 @@ public class OsisBook extends DocumentBook {
 
     public void setOsisId(String osisId) {
         this.osisId = osisId;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     @Override

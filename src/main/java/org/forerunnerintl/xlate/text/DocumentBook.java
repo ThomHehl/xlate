@@ -8,6 +8,10 @@ public abstract class DocumentBook {
 
     public abstract void setChapters(List<DocumentChapter> chapters);
 
+    public abstract String getTitle();
+
+    public abstract void setTitle(String title);
+
     public abstract String getType();
 
     public abstract void setType(String type);

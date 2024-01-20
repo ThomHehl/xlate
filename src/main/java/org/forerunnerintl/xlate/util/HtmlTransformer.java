@@ -64,9 +64,9 @@ public class HtmlTransformer {
     public static final String      VAR_NOTE_TEXT = "$noteText$";
     public static final String      VAR_VERSE_NUM = "$verseNumber$";
 
-    private DecimalFormat chapterFormat;
-    private OsisReader reader;
-    private Path textPath;
+    private final DecimalFormat chapterFormat;
+    private final OsisReader reader;
+    private final Path textPath;
 
     public static void main(String[] args) {
         XlateSettings xlateSettings = new XlateSettings();
@@ -160,6 +160,8 @@ public class HtmlTransformer {
             }
         }
 
+        dumpNotes(writer, noteList);
+
         try {
             writer.close();
         } catch (IOException ioe) {
@@ -176,7 +178,7 @@ public class HtmlTransformer {
 
         for (OsisNote note : noteList) {
             String noteId = note.getNoteId();
-            if (noteId == null || noteId.equals("")) {
+            if (noteId == null || noteId.isEmpty()) {
                 noteId = note.getOsisRef();
             }
             String noteEntry = HTML_NOTE_ENTRY.replace(VAR_NOTE_ID, noteId);

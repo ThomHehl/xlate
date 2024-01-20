@@ -28,7 +28,9 @@ public class MainEditorPane extends JPanel
                             implements MouseListener {
     private static final int    ANSWER_YES = 0;
 
-    public static final String  NAME_DEFINITION = "Definition";
+    public static final String NAME_BOOK = "Book Name";
+    public static final String NAME_SAVE = "Save";
+    public static final String NAME_STRUCTURE = "Structure";
     public static final String  NAME_TRANSLATION_NOTE = "Translation Note";
     public static final String  STYLE_BODY_TEXT = "bodyText";
     public static final String  STYLE_VERSE_NUMBER = "verseNumber";
@@ -42,9 +44,9 @@ public class MainEditorPane extends JPanel
     private Style           bodyText;
     private DefaultStyledDocument
                             styledDocument;
-    private RangeLookup<VerseReference>
+    final private RangeLookup<VerseReference>
                             referenceByOffset = new RangeLookup<>();
-    private Map<Integer, OsisWord>
+    final private Map<Integer, OsisWord>
                             wordsByOffset = new HashMap<>();
     private Style           verseNumber;
 
@@ -58,11 +60,9 @@ public class MainEditorPane extends JPanel
                             cmbBookSelection;
     private JComboBox<String>
                             cmbChapterSelection;
-    private JButton         buttonEditDefinition;
     private JLabel          labelStatusBar;
-    private JPanel          panelDefinition;
-    private JScrollPane     scrollDefinition;
-    private JTextArea       textDefinition;
+    private JPanel panelStructure;
+    private JTextField textBookName;
 
     private JButton         buttonEditTranslation;
     private JPanel          panelTranslation;
@@ -93,12 +93,9 @@ public class MainEditorPane extends JPanel
 
         cmbChapterSelection = new JComboBox<>();
         cmbChapterSelection.setPreferredSize(UiConstants.COMBO_SIZE);
-        cmbChapterSelection.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                String chapter = (String) cmbChapterSelection.getSelectedItem();
-                chapterSelected(chapter);
-            }
+        cmbChapterSelection.addActionListener(event -> {
+            String chapter = (String) cmbChapterSelection.getSelectedItem();
+            chapterSelected(chapter);
         });
         panelBookSelection.add(cmbChapterSelection);
 
@@ -171,25 +168,31 @@ public class MainEditorPane extends JPanel
         tabbedPane = new JTabbedPane();
         add(tabbedPane, BorderLayout.EAST);
 
-        addDefinitionTab();
+        addStructureTab();
         addTranslationNoteTab();
     }
 
-    private void addDefinitionTab() {
-        panelDefinition = new JPanel(new BorderLayout());
-        panelDefinition.setName(NAME_DEFINITION);
+    private void addStructureTab() {
+        panelStructure = new JPanel(new GridLayout(2,2));
+        panelStructure.setName(NAME_STRUCTURE);
 
-        scrollDefinition = new JScrollPane();
-        panelDefinition.add(scrollDefinition, BorderLayout.NORTH);
+        JLabel lblBook = new JLabel(NAME_BOOK);
+        panelStructure.add(lblBook);
 
-        textDefinition = new JTextArea();
-        scrollDefinition.add(textDefinition);
+        textBookName = new JTextField();
+        panelStructure.add(textBookName);
 
-        buttonEditDefinition = new JButton("Edit...");
-        buttonEditDefinition.setPreferredSize(UiConstants.BUTTON_SIZE);
-        panelDefinition.add(buttonEditDefinition, BorderLayout.SOUTH);
+        JLabel lblSpacer = new JLabel("");
+        panelStructure.add(lblSpacer);
 
-        tabbedPane.add(panelDefinition);
+        JButton btnSaveBook = new JButton(NAME_SAVE);
+        btnSaveBook.setPreferredSize(UiConstants.BUTTON_SIZE);
+        btnSaveBook.addActionListener(event -> {
+            OsisHelper.setBookName(document, textBookName.getText());
+        });
+        panelStructure.add(btnSaveBook);
+
+        tabbedPane.add(panelStructure);
     }
 
     private void addTranslationNoteTab() {
@@ -297,7 +300,7 @@ public class MainEditorPane extends JPanel
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ie) {
-                System.err.println(ie.toString());
+                System.err.println(ie);
             }
         }
         cmbBookSelection.removeAllItems();
@@ -343,6 +346,7 @@ public class MainEditorPane extends JPanel
 
     public void setOsisDocument(OsisDocument osisDocument) {
         this.document = osisDocument;
+        textBookName.setText(OsisHelper.getBookName(this.document));
         List<OsisChapter> chapters = document.getOsisText().getOsisBook().getOsisChapters();
         setChapters(chapters.size());
         setChapterText(chapters.get(0));
@@ -447,17 +451,19 @@ public class MainEditorPane extends JPanel
     }
 
     private void showEditWordDialog(OsisWord word, VerseReference verseReference) {
+        if (word == null) {
+            return;
+        }
+
         EditWordCommand editWord = new EditWordCommand();
         editWord.setTranslationEntryFuture(editorController.getPreferredTranslation(document, word.getLemma()));
         editWord.setVerseReference(verseReference);
         editWord.setWord(word);
 
-        if (word != null) {
-            EditTranslatedWordDialog dialog = new EditTranslatedWordDialog(owner, editWord);
-            EditWordCommand cmd = dialog.getEditWordCommand();
-            if (cmd != null) {
-                editorController.editDocument(document, cmd);
-            }
+        EditTranslatedWordDialog dialog = new EditTranslatedWordDialog(owner, editWord);
+        EditWordCommand cmd = dialog.getEditWordCommand();
+        if (cmd != null) {
+            editorController.editDocument(document, cmd);
         }
     }
 
@@ -547,13 +553,13 @@ public class MainEditorPane extends JPanel
         public static final String MENU_MOVE_RIGHT = "Move Right";
         public static final String MENU_NOTE = "Note";
 
-        private OsisWord word;
-        private VerseReference verseReference;
+        final private OsisWord word;
+        final private VerseReference verseReference;
 
-        private JMenuItem copyVerse;
-        private JMenuItem moveLeft;
-        private JMenuItem moveRight;
-        private JMenuItem note;
+        final private JMenuItem copyVerse;
+        final private JMenuItem moveLeft;
+        final private JMenuItem moveRight;
+        final private JMenuItem note;
 
         public ContextMenu(OsisWord word, VerseReference verseReference) {
             this.word = word;

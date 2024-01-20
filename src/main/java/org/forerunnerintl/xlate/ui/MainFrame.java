@@ -2,11 +2,13 @@ package org.forerunnerintl.xlate.ui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
 
 public class MainFrame extends JFrame implements ComponentListener {
 
-    private MainEditorPane mainEditorPanel;
+    private final MainEditorPane mainEditorPanel;
 
     private JMenuBar menuBar;
     private JMenu menuFile;
